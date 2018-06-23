@@ -280,10 +280,11 @@ export class Level {
         }
     }
     getEnemy(enemyTypeIndex) {
-        if (this.testPath == null) {
+        if (this.fullPath == null) {
             throw "null testPath!";
         }
-        return new Enemy(EnemyTypes[enemyTypeIndex], new PathingObject(this.wayPoints.slice(0), this.testPath, 0, new Point(0, 0)));
+        var fullPathCopy = this.fullPath.slice(0, this.fullPath.length);
+        return new Enemy(EnemyTypes[enemyTypeIndex], new PathingObject(this.wayPoints.slice(0), fullPathCopy, 0, new Point(0, 0)));
     }
     lose() {
         this.wonGame = false;
