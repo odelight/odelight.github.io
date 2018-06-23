@@ -10,7 +10,7 @@ var controller;
 var lossAlerted = false;
 start();
 function start() {
-    levels[0] = getLevelFour(); //getLevelOne();//getLevelFour();//getLevelOne();
+    levels[0] = getLevelOne();
     levels[1] = getLevelTwo();
     levels[2] = getLevelThree();
     levels[3] = getLevelFour();
