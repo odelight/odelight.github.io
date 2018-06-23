@@ -2,7 +2,7 @@ import { Point } from "./Point.js";
 import { black } from "./Color.js";
 import { ViewImageFileManager } from "./ViewImageFileManager.js";
 import { AttackView } from "./AttackView.js";
-var audio = new Audio('resources/journey.mp3');
+var audio = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/2a15a8a2/resources/Journey.mp3');
 audio.loop = true;
 audio.play();
 export class View {
