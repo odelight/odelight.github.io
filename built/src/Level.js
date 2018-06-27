@@ -40,6 +40,10 @@ export class Level {
             this.remainingEnemies += enemySpawnTimes[i].length;
         }
         this.mapGrid = new MapGrid(boardWidth, boardHeight);
+        this.blackPoints = blackPoints;
+        for (var i = 0; i < blackPoints.length; i++) {
+            this.mapGrid.setBlocked(blackPoints[i]);
+        }
         this.view = new View(this.context, boardWidth, boardHeight, this.tileWidth, this.tileHeight, this.displayRegionWidth);
         this.pathers = [];
         for (var i = 0; i < wayPoints.length; i++) {
@@ -48,10 +52,6 @@ export class Level {
         this.updatePatherMapGrid();
         this.enemySpawnPoint = new TilePoint(0, 0);
         this.fullPath = Pathing.fullPath(this.pathers, this.enemySpawnPoint);
-        this.blackPoints = blackPoints;
-        for (var i = 0; i < blackPoints.length; i++) {
-            this.mapGrid.setBlocked(blackPoints[i]);
-        }
         this.tetradFactory = tetradFactory;
         this.nextTetrad = this.getNextTetrad();
         for (var i = 0; i < 12; i++) {
