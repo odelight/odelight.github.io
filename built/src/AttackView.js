@@ -1,4 +1,4 @@
-import { Point } from "./Point.js";
+import { PixelPoint } from "./PixelPoint.js";
 export class AttackView {
     constructor(start, end, image, duration) {
         this.image = image;
@@ -11,7 +11,7 @@ export class AttackView {
         var yStep = (end.y - start.y) / steps;
         var result = [];
         for (var i = 0; i <= steps; i++) {
-            result.push(new Point(start.x + xStep * i, start.y + yStep * i));
+            result.push(new PixelPoint(start.x + xStep * i, start.y + yStep * i));
         }
         return result;
     }

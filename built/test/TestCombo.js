@@ -1,4 +1,4 @@
-import { Point } from "../src/Point.js";
+import { TilePoint } from "../src/TilePoint.js";
 import { Tetrad } from "../src/Tetrad.js";
 import { tetradO } from "../src/TetradType.js";
 import { Combo } from "../src/Combo.js";
@@ -15,10 +15,10 @@ export class TestCombo {
     }
     static testTetradInBig() {
         var bigTetradHashSet = new PointSet();
-        bigTetradHashSet.add(new Point(0, 0));
-        bigTetradHashSet.add(new Point(0, 1));
-        bigTetradHashSet.add(new Point(1, 0));
-        bigTetradHashSet.add(new Point(1, 1));
+        bigTetradHashSet.add(new TilePoint(0, 0));
+        bigTetradHashSet.add(new TilePoint(0, 1));
+        bigTetradHashSet.add(new TilePoint(1, 0));
+        bigTetradHashSet.add(new TilePoint(1, 1));
         var t = new Tetrad(tetradO, 0, 0);
         TestUtils.assertTrue(Combo.tetradInBig(bigTetradHashSet, t));
     }
@@ -26,7 +26,7 @@ export class TestCombo {
         var bigTetradHashSet = new PointSet();
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 2; j++) {
-                bigTetradHashSet.add(new Point(i, j));
+                bigTetradHashSet.add(new TilePoint(i, j));
             }
         }
         for (var i = 0; i < 4; i++) {

@@ -3,8 +3,14 @@ export class Point {
         if (x > Point.hashConstant || y > Point.hashConstant) {
             throw "Point hashing function will no longer properly work; x or y greater than hashConstant.";
         }
-        this.x = x;
-        this.y = y;
+        this._x = x;
+        this._y = y;
+    }
+    get x() {
+        return this._x;
+    }
+    get y() {
+        return this._y;
     }
     hash() {
         return Point.hashConstant * this.x + this.y;

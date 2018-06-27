@@ -1,4 +1,4 @@
-import { Point } from "./Point.js";
+import { TilePoint } from "./TilePoint.js";
 import { Tetrad } from "./Tetrad.js";
 import { MapGrid } from "./MapGrid.js";
 import { View } from "./View.js";
@@ -42,12 +42,12 @@ export class Level {
         this.mapGrid = new MapGrid(boardWidth, boardHeight);
         this.view = new View(this.context, boardWidth, boardHeight, this.tileWidth, this.tileHeight, this.displayRegionWidth);
         this.pathers = [];
-        for (var i = 0; i < wayPoints.length - 1; i++) {
+        for (var i = 0; i < wayPoints.length; i++) {
             this.pathers[i] = new Pathing();
-            this.pathers[i].resetMap(this.mapGrid, wayPoints[i + 1], null);
         }
-        this.testPath = this.pathers[0].aStar(wayPoints[0]);
-        this.fullPath = Pathing.fullPath(this.pathers, wayPoints[0]);
+        this.updatePatherMapGrid();
+        this.enemySpawnPoint = new TilePoint(0, 0);
+        this.fullPath = Pathing.fullPath(this.pathers, this.enemySpawnPoint);
         this.blackPoints = blackPoints;
         for (var i = 0; i < blackPoints.length; i++) {
             this.mapGrid.setBlocked(blackPoints[i]);
@@ -76,8 +76,8 @@ export class Level {
     static staticUpdate(level) {
         level.update();
     }
-    updateGhostTetrad(rawMousePos) {
-        var drawPos = this.getDrawPositionFromMouse(rawMousePos.x, rawMousePos.y, this.nextTetrad);
+    updateGhostTetrad(rawMouseX, rawMouseY) {
+        var drawPos = this.getDrawPositionFromMouse(rawMouseX, rawMouseY, this.nextTetrad);
         this.clearAndDrawStatic();
         this.ghostTetrad = new Tetrad(this.nextTetrad, drawPos.x, drawPos.y);
         if (this.canPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y)) {
@@ -95,14 +95,14 @@ export class Level {
             this.advanceComingTetrads();
         }
     }
-    tryRotateTetrad(rawMousePos) {
+    tryRotateTetrad(rawMouseX, rawMouseY) {
         this.nextTetrad = TetradType.rotateTetrad(this.nextTetrad);
-        this.updateGhostTetrad(rawMousePos);
+        this.updateGhostTetrad(rawMouseX, rawMouseY);
     }
     getDrawPositionFromMouse(mouseX, mouseY, tetrad) {
         var drawX = Math.floor((mouseX / this.tileWidth) - tetrad.centerX - 0.2);
         var drawY = Math.floor((mouseY / this.tileHeight) - tetrad.centerY - 0.2);
-        return new Point(drawX, drawY);
+        return new TilePoint(drawX, drawY);
     }
     clearAndDrawStatic() {
         //clear canvas;
@@ -131,7 +131,7 @@ export class Level {
             if (xCoord < 0 || xCoord >= this.boardWidth || yCoord < 0 || yCoord >= this.boardHeight) {
                 return false;
             }
-            if (this.mapGrid.isBlocked(new Point(xCoord, yCoord))) {
+            if (this.mapGrid.isBlocked(new TilePoint(xCoord, yCoord))) {
                 return false;
             }
         }
@@ -147,7 +147,7 @@ export class Level {
             checkPathers[i] = new Pathing();
             checkPathers[i].resetMap(this.mapGrid, this.wayPoints[i + 1], tetrad);
         }
-        if (Pathing.fullPath(checkPathers, this.wayPoints[0]) == null) {
+        if (Pathing.fullPath(checkPathers, this.enemySpawnPoint) == null) {
             return false;
         }
         return true;
@@ -166,26 +166,16 @@ export class Level {
         for (var i = 0; i < T.type.offsetList.length; i++) {
             this.mapGrid.setBlocked(T.type.offsetList[i].offset(T.position));
         }
-        for (var i = 0; i < this.wayPoints.length - 1; i++) {
-            this.pathers[i].resetMap(this.mapGrid, this.wayPoints[i + 1], null);
-        }
+        this.updatePatherMapGrid();
         for (var i = 0; i < this.enemyList.length; i++) {
-            var enemyPathing = this.enemyList[i].pathing;
-            var enemyPosition = new Point(Math.floor(enemyPathing.position.x / this.tileWidth), Math.floor(enemyPathing.position.y / this.tileHeight));
-            //track = pather.aStar(Math.floor(enemy.position.x / tileWidth), Math.floor(enemy.position.y / tileHeight), goalX, goalY, mapGrid);
-            var track = this.pathers[enemyPathing.wayPointsIndex].aStar(enemyPosition);
-            while (track == null) {
-                var point = enemyPathing.track.shift();
-                if (point == null) {
-                    throw "Unexpectedly null point in enemy track";
-                }
-                track = this.pathers[enemyPathing.wayPointsIndex].aStar(point);
-            }
-            enemyPathing.track = track;
-            enemyPathing.track.shift();
+            this.enemyList[i].pathing.setPathers(this.pathers);
         }
-        this.fullPath = Pathing.fullPath(this.pathers, this.wayPoints[0]);
-        this.pathers[0].aStar(this.wayPoints[0]);
+        this.fullPath = Pathing.fullPath(this.pathers, this.enemySpawnPoint);
+    }
+    updatePatherMapGrid() {
+        for (var i = 0; i < this.wayPoints.length; i++) {
+            this.pathers[i].resetMap(this.mapGrid, this.wayPoints[i], null);
+        }
     }
     update() {
         this.spawnEnemies();
@@ -199,36 +189,10 @@ export class Level {
         for (var i = 0; i < this.enemyList.length; i++) {
             var enemy = this.enemyList[i];
             var enemyPathing = enemy.pathing;
-            if (enemyPathing.track.length == 0) {
-                enemyPathing.wayPointsIndex = enemyPathing.wayPointsIndex + 1;
-                if (enemyPathing.wayPointsIndex >= enemyPathing.wayPoints.length - 1) {
-                    this.decrementLives();
-                    this.destroyEnemy(enemy);
-                    continue;
-                }
-                var currentPather = this.pathers[enemyPathing.wayPointsIndex];
-                var currentWayPoint = enemyPathing.wayPoints[enemyPathing.wayPointsIndex];
-                var track = currentPather.aStar(currentWayPoint);
-                if (track == null) {
-                    throw "Null track!";
-                }
-                enemyPathing.track = track;
-            }
-            var dx = (this.tileWidth * enemyPathing.track[0].x) - enemyPathing.position.x;
-            var dy = (this.tileHeight * enemyPathing.track[0].y) - enemyPathing.position.y;
-            var dist = Pathing.straightDistance(new Point(enemyPathing.position.x, enemyPathing.position.y), new Point(this.tileWidth * enemyPathing.track[0].x, this.tileHeight * enemyPathing.track[0].y));
-            var speed = enemy.currentSpeed;
-            if (dist < speed) {
-                var a = enemyPathing.track.shift();
-                if (a == null) {
-                    throw "Unecpectedly undefined track!";
-                }
-                enemyPathing.position.x = this.tileWidth * a.x;
-                enemyPathing.position.y = this.tileHeight * a.y;
-            }
-            else {
-                enemyPathing.position.x += (dx / dist) * speed;
-                enemyPathing.position.y += (dy / dist) * speed;
+            if (enemyPathing.update(enemy.currentSpeed)) {
+                this.decrementLives();
+                this.destroyEnemy(enemy);
+                continue;
             }
             enemy.updateEffectTimers();
         }
@@ -249,7 +213,7 @@ export class Level {
         if (this.time % tetrad.type.attackType.attackDelay == 0) {
             for (var j = 0; j < this.enemyList.length; j++) {
                 var enemy = this.enemyList[j];
-                var enemyTilePosition = new Point(enemy.pathing.position.x / this.tileWidth, enemy.pathing.position.y / this.tileHeight);
+                var enemyTilePosition = enemy.pathing.pixelPosition.asTilePoint(this.tileWidth, this.tileHeight);
                 if (Pathing.straightDistance(tetrad.position, enemyTilePosition) < tetrad.type.attackType.range) {
                     this.doAttack(tetrad, enemy);
                     return;
@@ -262,7 +226,7 @@ export class Level {
         if (enemy.hp <= 0) {
             this.destroyEnemy(enemy);
         }
-        this.attackList.push(new Attack(tetrad, enemy.pathing.position));
+        this.attackList.push(new Attack(tetrad, enemy.pathing.pixelPosition));
     }
     destroyEnemy(enemy) {
         this.enemyList.splice(this.enemyList.indexOf(enemy), 1);
@@ -280,11 +244,7 @@ export class Level {
         }
     }
     getEnemy(enemyTypeIndex) {
-        if (this.fullPath == null) {
-            throw "null testPath!";
-        }
-        var fullPathCopy = this.fullPath.slice(0, this.fullPath.length);
-        return new Enemy(EnemyTypes[enemyTypeIndex], new PathingObject(this.wayPoints.slice(0), fullPathCopy, 0, new Point(0, 0)));
+        return new Enemy(EnemyTypes[enemyTypeIndex], new PathingObject(this.wayPoints.slice(0), this.enemySpawnPoint, this.pathers, this.tileWidth, this.tileHeight));
     }
     lose() {
         this.wonGame = false;

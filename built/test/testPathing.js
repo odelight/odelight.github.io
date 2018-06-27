@@ -1,6 +1,6 @@
 import { Pathing } from "../src/Pathing.js";
 import { MapGrid } from "../src/MapGrid.js";
-import { Point } from "../src/Point.js";
+import { TilePoint } from "../src/TilePoint.js";
 import { TestUtils } from "./testUtils.js";
 export class TestPathing {
     static testPathing() {
@@ -8,8 +8,8 @@ export class TestPathing {
         var boardWidth = 3;
         var boardHeight = 2;
         var mapGrid = new MapGrid(boardWidth, boardHeight);
-        pathing.resetMap(mapGrid, new Point(2, 0), null);
-        var path = pathing.aStar(new Point(0, 0));
+        pathing.resetMap(mapGrid, new TilePoint(2, 0), null);
+        var path = pathing.aStar(new TilePoint(0, 0));
         if (path == null) {
             throw "Null path returned";
         }
@@ -19,7 +19,7 @@ export class TestPathing {
         TestUtils.assertEquals(path[1].y, 0);
         TestUtils.assertEquals(path[2].x, 2);
         TestUtils.assertEquals(path[2].y, 0);
-        var path2 = pathing.aStar(new Point(0, 0));
+        var path2 = pathing.aStar(new TilePoint(0, 0));
         if (path2 == null) {
             throw "Null path returned";
         }
@@ -29,9 +29,9 @@ export class TestPathing {
         TestUtils.assertEquals(path2[1].y, 0);
         TestUtils.assertEquals(path2[2].x, 2);
         TestUtils.assertEquals(path2[2].y, 0);
-        mapGrid.setBlocked(new Point(1, 0));
-        pathing.resetMap(mapGrid, new Point(2, 0), null);
-        path = pathing.aStar(new Point(0, 0));
+        mapGrid.setBlocked(new TilePoint(1, 0));
+        pathing.resetMap(mapGrid, new TilePoint(2, 0), null);
+        path = pathing.aStar(new TilePoint(0, 0));
         if (path == null) {
             throw "Null path returned";
         }
@@ -41,7 +41,7 @@ export class TestPathing {
         TestUtils.assertEquals(path[1].y, 1);
         TestUtils.assertEquals(path[2].x, 2);
         TestUtils.assertEquals(path[2].y, 0);
-        path2 = pathing.aStar(new Point(0, 0));
+        path2 = pathing.aStar(new TilePoint(0, 0));
         if (path2 == null) {
             throw "Null path returned";
         }

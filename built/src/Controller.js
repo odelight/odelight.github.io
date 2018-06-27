@@ -1,5 +1,4 @@
 import { Util } from "./Util.js";
-import { Point } from "./Point.js";
 export class Controller {
     constructor(document) {
         var canvas = Util.checkType(document.getElementById("gameCanvas"), HTMLCanvasElement);
@@ -21,8 +20,9 @@ export class Controller {
         Controller.instance.onKeyPress(event);
     }
     onMouseMove(event) {
-        this.rawMousePos = new Point(event.clientX, event.clientY);
-        this.level.updateGhostTetrad(this.rawMousePos);
+        this.rawMouseX = event.clientX;
+        this.rawMouseY = event.clientY;
+        this.level.updateGhostTetrad(this.rawMouseX, this.rawMouseY);
     }
     onMouseClick(event) {
         this.level.clearAndDrawStatic();
@@ -30,7 +30,7 @@ export class Controller {
     }
     onKeyPress(event) {
         if (event.keyCode == Controller.SPACE_BAR_CODE) {
-            this.level.tryRotateTetrad(this.rawMousePos);
+            this.level.tryRotateTetrad(this.rawMouseX, this.rawMouseY);
             event.preventDefault();
         }
     }

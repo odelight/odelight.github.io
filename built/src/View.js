@@ -1,10 +1,12 @@
-import { Point } from "./Point.js";
 import { black } from "./Color.js";
 import { ViewImageFileManager } from "./ViewImageFileManager.js";
 import { AttackView } from "./AttackView.js";
+import { PixelPoint } from "./PixelPoint.js";
+/*
 var audio = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/2a15a8a2/resources/Journey.mp3');
 audio.loop = true;
 audio.play();
+*/
 export class View {
     constructor(ctx, boardWidth, boardHeight, tileWidth, tileHeight, displayRegionWidth) {
         this.attackViews = [];
@@ -80,10 +82,10 @@ export class View {
     }
     drawEnemy(enemy) {
         var health_128 = 128 * (enemy.hp / enemy.maxHp);
-        var x = enemy.pathing.position.x;
-        var y = enemy.pathing.position.y;
+        var x = enemy.pathing.pixelPosition.x;
+        var y = enemy.pathing.pixelPosition.y;
         var image = this.imageFileManager.getEnemyImage(enemy.type, health_128);
-        this.ctx.drawImage(image, x, y);
+        this.ctx.drawImage(image, x - (image.width / 2), y - (image.height / 2));
     }
     drawAttacks(attackList) {
         while (attackList.length > 0) {
@@ -100,7 +102,7 @@ export class View {
     getTetradFirePosition(attackingTetrad) {
         var tetradFireFromX = (attackingTetrad.position.x + attackingTetrad.type.centerX) * this.tileWidth + (this.tileWidth / 2);
         var tetradFireFromY = (attackingTetrad.position.y + attackingTetrad.type.centerY) * this.tileHeight + (this.tileHeight / 2);
-        return new Point(tetradFireFromX, tetradFireFromY);
+        return new PixelPoint(tetradFireFromX, tetradFireFromY);
     }
     drawPath(path) {
         if (path == null) {

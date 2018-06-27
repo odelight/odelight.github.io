@@ -1,5 +1,5 @@
 import { Heap } from "./Heap.js";
-import { Point } from "./Point.js";
+import { TilePoint } from "./TilePoint.js";
 import { PathingPoint } from "./PathingPoint.js";
 import { PointOffset } from "./PointOffset.js";
 import { PointSet } from "./PointSet.js";
@@ -75,10 +75,10 @@ export class Pathing {
         }
         for (var i = 0; i < diagonalPotentialNeighborOffsets.length; i++) {
             var potentialNeighbor = diagonalPotentialNeighborOffsets[i];
-            var pos = new Point(node.x + potentialNeighbor.x, node.y + potentialNeighbor.y);
+            var pos = new TilePoint(node.x + potentialNeighbor.x, node.y + potentialNeighbor.y);
             if (!this.isPointBlocked(pos, tetrad)) {
                 for (var j = 0; j < potentialNeighbor.sub.length; j++) {
-                    var subPos = new Point(node.x + potentialNeighbor.sub[j].x, node.y + potentialNeighbor.sub[j].y);
+                    var subPos = new TilePoint(node.x + potentialNeighbor.sub[j].x, node.y + potentialNeighbor.sub[j].y);
                     if (!this.isPointBlocked(subPos, tetrad)) {
                         neighbors.push(pos);
                         break;
@@ -113,7 +113,7 @@ export class Pathing {
         while (cameFrom.has(current)) {
             var newPoint = cameFrom.get(current);
             if (newPoint == null) {
-                throw "Point is undefined! (Point: " + Point + ")";
+                throw "Point is undefined! (Point: " + TilePoint + ")";
             }
             current = newPoint;
             path.push(current);
