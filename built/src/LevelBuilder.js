@@ -1,5 +1,9 @@
 import { Level } from "./Level.js";
+import { TilePoint } from "./TilePoint.js";
 export class LevelBuilder {
+    constructor() {
+        this.enemySpawnPoint = new TilePoint(0, 0);
+    }
     withLives(lives) {
         this.lives = lives;
         return this;
@@ -32,7 +36,11 @@ export class LevelBuilder {
         this.blackPoints = blackPoints;
         return this;
     }
+    withEnemySpawnPoint(enemySpawnPoint) {
+        this.enemySpawnPoint = enemySpawnPoint;
+        return this;
+    }
     build() {
-        return new Level(this.lives, this.enemySpawnTimes, this.boardHeight, this.boardWidth, this.wayPoints, this.canvas, this.tetradFactory, this.blackPoints);
+        return new Level(this.lives, this.enemySpawnTimes, this.boardHeight, this.boardWidth, this.wayPoints, this.canvas, this.tetradFactory, this.blackPoints, this.enemySpawnPoint);
     }
 }

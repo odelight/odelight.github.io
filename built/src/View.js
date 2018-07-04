@@ -2,9 +2,6 @@ import { black } from "./Color.js";
 import { ViewImageFileManager } from "./ViewImageFileManager.js";
 import { AttackView } from "./AttackView.js";
 import { PixelPoint } from "./PixelPoint.js";
-var audio = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/2a15a8a2/resources/Journey.mp3');
-audio.loop = true;
-audio.play();
 export class View {
     constructor(ctx, boardWidth, boardHeight, tileWidth, tileHeight, displayRegionWidth) {
         this.attackViews = [];
@@ -134,5 +131,10 @@ export class View {
     drawLives(numLives, fontSize, xPos, yPos) {
         this.ctx.font = fontSize + "px Arial";
         this.ctx.fillText("lives: " + numLives, xPos, yPos);
+    }
+    intermediateScreen(displayString) {
+        this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+        this.ctx.font = 36 + "px Arial";
+        this.ctx.fillText(displayString, 20, this.canvasHeight / 2);
     }
 }

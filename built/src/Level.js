@@ -11,7 +11,7 @@ import { Combo } from "./Combo.js";
 import { PathingObject } from "./PathingObject.js";
 import { EnemyTypes } from "./EnemyType.js";
 export class Level {
-    constructor(lives, enemySpawnTimes, boardHeight, boardWidth, wayPoints, canvas, tetradFactory, blackPoints) {
+    constructor(lives, enemySpawnTimes, boardHeight, boardWidth, wayPoints, canvas, tetradFactory, blackPoints, enemySpawnPoint) {
         this.tetradPlacementLegal = true;
         this.isOver = false;
         this.wonGame = false;
@@ -20,7 +20,6 @@ export class Level {
         this.ghostTetrad = null;
         this.enemyList = [];
         this.attackList = [];
-        this.towerTimer = 0;
         this.lives = lives;
         this.enemySpawnTimes = enemySpawnTimes;
         this.boardHeight = boardHeight;
@@ -32,9 +31,9 @@ export class Level {
         canvas.width = boardWidth * this.tileWidth + this.displayRegionWidth;
         canvas.height = boardHeight * this.tileHeight;
         this.context = Util.checkType(canvas.getContext("2d"), CanvasRenderingContext2D);
-        this.time = 0;
-        this.towerTimer = 0;
         this.towerBuildDelay = 400;
+        this.time = 0;
+        this.towerTimer = this.towerBuildDelay;
         this.remainingEnemies = 0;
         for (var i = 0; i < enemySpawnTimes.length; i++) {
             this.remainingEnemies += enemySpawnTimes[i].length;
@@ -50,7 +49,7 @@ export class Level {
             this.pathers[i] = new Pathing();
         }
         this.updatePatherMapGrid();
-        this.enemySpawnPoint = new TilePoint(0, 0);
+        this.enemySpawnPoint = enemySpawnPoint;
         this.fullPath = Pathing.fullPath(this.pathers, this.enemySpawnPoint);
         this.tetradFactory = tetradFactory;
         this.nextTetrad = this.getNextTetrad();
@@ -143,9 +142,9 @@ export class Level {
         }
         var tetrad = new Tetrad(T, xPosition, yPosition);
         var checkPathers = [];
-        for (var i = 0; i < this.wayPoints.length - 1; i++) {
+        for (var i = 0; i < this.wayPoints.length; i++) {
             checkPathers[i] = new Pathing();
-            checkPathers[i].resetMap(this.mapGrid, this.wayPoints[i + 1], tetrad);
+            checkPathers[i].resetMap(this.mapGrid, this.wayPoints[i], tetrad);
         }
         if (Pathing.fullPath(checkPathers, this.enemySpawnPoint) == null) {
             return false;
