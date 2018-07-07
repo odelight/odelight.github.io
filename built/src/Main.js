@@ -3,14 +3,12 @@ import { Util } from "./Util.js";
 import { Controller } from "./Controller.js";
 import { tetradO, tetradI, TetradType, tetradS, tetradJ, tetradL, tetradT } from "./TetradType.js";
 import { LevelBuilder } from "./LevelBuilder.js";
+import { AudioService } from "./AudioService.js";
 var canvas = Util.checkType(document.getElementById("gameCanvas"), HTMLCanvasElement);
 var levelLoaders = [];
 var currentLevelIndex;
 var controller;
 var lossAlerted = false;
-var audio = [new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/2a15a8a2/resources/Journey.mp3'), new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/3c14b21e/resources/Dixie.mp3')];
-var victorySound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/156fbc20/resources/Victory.mp3');
-var audioPlaying = false;
 var waitingForClickToContinue = false;
 var currentLevel;
 start();
@@ -26,13 +24,27 @@ function start() {
     levelLoaders[8] = getLevelNine;
     levelLoaders[9] = getLevelTen;
     controller = new Controller(document);
-    loadLevel(0);
-    //loadLevel(9);
+    var startLevel = getStartLevel();
+    loadLevel(startLevel);
+    //loadLevel(5);
     setIntermediateScreen("Press anywhere to start the game", currentLevel.view);
     var updateVar = setInterval(updateLevel, 10);
 }
+function getStartLevel() {
+    var url_string = window.location.href;
+    var url = new URL(url_string);
+    var startLevelString = url.searchParams.get("startLevel");
+    if (startLevelString == null) {
+        return 0;
+    }
+    var startLevel = parseInt(startLevelString) - 1;
+    if (startLevel < 0 || startLevel >= levelLoaders.length || !Number.isInteger(startLevel)) {
+        return 0;
+    }
+    return startLevel;
+}
 function loadLevel(levelIndex) {
-    playMusicForLevel(levelIndex);
+    AudioService.playMusicForLevel(levelIndex);
     currentLevel = levelLoaders[levelIndex]();
     currentLevelIndex = levelIndex;
     controller.setLevel(currentLevel);
@@ -49,22 +61,29 @@ function updateLevel() {
     }
     currentLevel.update();
     if (currentLevel.isOver) {
-        if (currentLevel.wonGame) {
-            if (isLastLevel(currentLevelIndex)) {
-                setIntermediateScreen("You beat the last level! Click anywhere to restart", currentLevel.view);
-                currentLevelIndex = 0;
-                playVictorySound();
-            }
-            else {
-                setIntermediateScreen("You beat level " + currentLevelIndex + ". Click anywhere to load the next level", currentLevel.view);
-                currentLevelIndex++;
-                playVictorySound();
-            }
+        handleLevelOver();
+    }
+}
+function handleLevelOver() {
+    if (currentLevel.wonGame) {
+        if (isLastLevel(currentLevelIndex)) {
+            setIntermediateScreen("You beat the last level! Click anywhere to restart", currentLevel.view);
+            currentLevelIndex = 0;
+            AudioService.playVictorySound();
         }
         else {
-            setIntermediateScreen("You lost on level " + currentLevelIndex + ". Click anywhere to retry the level", currentLevel.view);
+            setIntermediateScreen("You beat level " + makeLevelUserDisplayable(currentLevelIndex) + ". Click anywhere to load the next level", currentLevel.view);
+            currentLevelIndex++;
+            AudioService.playVictorySound();
         }
     }
+    else {
+        setIntermediateScreen("You lost on level " + makeLevelUserDisplayable(currentLevelIndex) + ". Click anywhere to retry the level", currentLevel.view);
+        AudioService.playDefeatSound();
+    }
+}
+function makeLevelUserDisplayable(levelIndex) {
+    return levelIndex + 1;
 }
 function setIntermediateScreen(text, view) {
     view.intermediateScreen(text);
@@ -73,35 +92,6 @@ function setIntermediateScreen(text, view) {
 }
 function isLastLevel(level) {
     return level >= levelLoaders.length - 1;
-}
-function playVictorySound() {
-    stopMusic();
-    victorySound.play();
-}
-function playMusicForLevel(levelIndex) {
-    if (!audioPlaying) {
-        if (levelIndex < 5) {
-            playMusic(audio[0]);
-        }
-        else {
-            playMusic(audio[1]);
-        }
-    }
-}
-function stopMusic() {
-    for (var i = 0; i < audio.length; i++) {
-        audio[i].pause();
-    }
-    audioPlaying = false;
-}
-function playMusic(audio) {
-    audio.loop = true;
-    var playPromise = audio.play();
-    if (playPromise !== undefined) {
-        playPromise.then(() => audioPlaying = true).catch(() => {
-            setTimeout(() => playMusic(audio), 100);
-        });
-    }
 }
 function getLevelOne() {
     var spawnTimes = [];
@@ -123,7 +113,7 @@ function getLevelOne() {
 function getLevelTwo() {
     var level = new LevelBuilder()
         .withLives(2)
-        .withEnemySpawnTimes([[800, 1600, 2400], [3200, 4000, 4800], []])
+        .withEnemySpawnTimes([[800, 1600, 2400], [3200, 3800, 4400, 5000], []])
         .withBoardWidth(40)
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 1), new TilePoint(1, 39), new TilePoint(39, 39)])
@@ -135,7 +125,7 @@ function getLevelTwo() {
 }
 function getLevelThree() {
     var spawnTimes = [];
-    for (var i = 1; i <= 30; i++) {
+    for (var i = 1; i <= 28; i++) {
         spawnTimes.push(i * (350 - 7 * i));
     }
     var level = new LevelBuilder()

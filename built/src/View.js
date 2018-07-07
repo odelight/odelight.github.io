@@ -35,8 +35,12 @@ export class View {
             this.drawTetrad(comingTetrads[i], xPosition, yPosition, false, true);
         }
     }
-    drawTetrad(tetrad, xPosition, yPosition, isGhost = false, isLegal = true) {
+    drawTetrad(tetrad, xPosition, yPosition, isGhost = false, isLegal = true, waitingOnTimer = false) {
         var tile;
+        this.ctx.save();
+        if (waitingOnTimer) {
+            this.ctx.globalAlpha = 0.5;
+        }
         if (isGhost) {
             if (isLegal) {
                 tile = this.imageFileManager.getGhostTetradImage();
@@ -49,6 +53,7 @@ export class View {
             tile = this.imageFileManager.getTetradImage(tetrad);
         }
         this.drawSquareList(xPosition, yPosition, tile, tetrad.offsetList);
+        this.ctx.restore();
     }
     drawSquareList(xPosition, yPosition, tile, offsetList) {
         for (var i = 0; i < offsetList.length; i++) {
@@ -99,7 +104,7 @@ export class View {
         var tetradFireFromY = (attackingTetrad.position.y + attackingTetrad.type.centerY) * this.tileHeight + (this.tileHeight / 2);
         return new PixelPoint(tetradFireFromX, tetradFireFromY);
     }
-    drawPath(path) {
+    drawPath(path, wayPoints = []) {
         if (path == null) {
             throw "Path is null!";
         }
@@ -111,6 +116,12 @@ export class View {
         }
         this.ctx.stroke();
         this.ctx.closePath();
+        for (var i = 0; i < wayPoints.length; i++) {
+            this.drawWaypoint(wayPoints[i], i + 1);
+        }
+    }
+    drawWaypoint(position, index) {
+        this.drawSquare(position.x, position.y, this.imageFileManager.getWaypointImage(index));
     }
     drawTimer(fractionLeft, centerX, centerY, radius) {
         var percent = 100 * fractionLeft;

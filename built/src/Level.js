@@ -10,6 +10,7 @@ import { Attack } from "./Attack.js";
 import { Combo } from "./Combo.js";
 import { PathingObject } from "./PathingObject.js";
 import { EnemyTypes } from "./EnemyType.js";
+import { AudioService } from "./AudioService.js";
 export class Level {
     constructor(lives, enemySpawnTimes, boardHeight, boardWidth, wayPoints, canvas, tetradFactory, blackPoints, enemySpawnPoint) {
         this.tetradPlacementLegal = true;
@@ -79,19 +80,17 @@ export class Level {
         var drawPos = this.getDrawPositionFromMouse(rawMouseX, rawMouseY, this.nextTetrad);
         this.clearAndDrawStatic();
         this.ghostTetrad = new Tetrad(this.nextTetrad, drawPos.x, drawPos.y);
-        if (this.canPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y)) {
-            this.tetradPlacementLegal = true;
-        }
-        else {
-            this.tetradPlacementLegal = false;
-        }
+        this.tetradPlacementLegal = this.cheapCanPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y);
     }
     tryPlaceTetrad(x, y) {
         var drawPos = this.getDrawPositionFromMouse(x, y, this.nextTetrad);
-        if (this.towerTimer <= 0 && this.expensiveCanPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y)) {
+        if (this.towerTimer <= 0 && this.canPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y)) {
             this.pushTetrad(new Tetrad(this.nextTetrad, drawPos.x, drawPos.y));
             this.towerTimer = this.towerBuildDelay;
             this.advanceComingTetrads();
+        }
+        else {
+            AudioService.playErrorSound();
         }
     }
     tryRotateTetrad(rawMouseX, rawMouseY) {
@@ -113,7 +112,7 @@ export class Level {
         this.view.drawEnemies(this.enemyList);
         this.view.drawAttacks(this.attackList);
         if (this.ghostTetrad != null) {
-            this.view.drawTetrad(this.ghostTetrad.type, this.ghostTetrad.position.x, this.ghostTetrad.position.y, true, this.tetradPlacementLegal);
+            this.view.drawTetrad(this.ghostTetrad.type, this.ghostTetrad.position.x, this.ghostTetrad.position.y, true, this.tetradPlacementLegal, this.towerTimer > 0);
         }
         var timerXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 4);
         this.view.drawTimer(this.towerTimer / this.towerBuildDelay, timerXCenter, this.displayRegionWidth / 4, this.displayRegionWidth / 8);
@@ -121,23 +120,29 @@ export class Level {
         this.view.drawLives(this.lives, 20, livesXCenter, this.displayRegionWidth / 4);
         this.view.drawUpcomingTetrads(this.comingTetrads);
         this.view.drawBlockedSpaces(this.blackPoints);
-        this.view.drawPath(this.fullPath);
+        this.view.drawPath(this.fullPath, this.wayPoints);
     }
-    canPlaceLegally(T, xPosition, yPosition) {
+    cheapCanPlaceLegally(T, xPosition, yPosition) {
         for (var i = 0; i < T.offsetList.length; i++) {
             var xCoord = xPosition + T.offsetList[i].xOffset;
             var yCoord = yPosition + T.offsetList[i].yOffset;
+            var tilePoint = new TilePoint(xCoord, yCoord);
             if (xCoord < 0 || xCoord >= this.boardWidth || yCoord < 0 || yCoord >= this.boardHeight) {
                 return false;
             }
-            if (this.mapGrid.isBlocked(new TilePoint(xCoord, yCoord))) {
+            if (this.mapGrid.isBlocked(tilePoint)) {
                 return false;
+            }
+            for (var j = 0; j < this.wayPoints.length; j++) {
+                if (this.wayPoints[j].equals(tilePoint)) {
+                    return false;
+                }
             }
         }
         return true;
     }
-    expensiveCanPlaceLegally(T, xPosition, yPosition) {
-        if (!this.canPlaceLegally(T, xPosition, yPosition)) {
+    canPlaceLegally(T, xPosition, yPosition) {
+        if (!this.cheapCanPlaceLegally(T, xPosition, yPosition)) {
             return false;
         }
         var tetrad = new Tetrad(T, xPosition, yPosition);
@@ -153,6 +158,12 @@ export class Level {
     }
     pushTetrad(T) {
         var toPush = Combo.detectCombos(T, this.tetradList);
+        if (toPush != null) {
+            AudioService.playEliteTetradSound();
+        }
+        else {
+            AudioService.playBuildTetradSound();
+        }
         this.tetradList.push(T);
         if (toPush != null) {
             var bigTetrad = toPush.bigTetrad;
@@ -205,20 +216,35 @@ export class Level {
     doAttacks() {
         for (var i = 0; i < this.tetradList.length; i++) {
             var tetrad = this.tetradList[i];
+            if (tetrad.type.attackType.slows()) {
+                if (this.tetradDoAttack(tetrad, (enemy) => !enemy.isSlowed())) {
+                    continue;
+                }
+            }
             this.tetradDoAttack(tetrad);
         }
     }
-    tetradDoAttack(tetrad) {
+    tetradDoAttack(tetrad, predicate = (enemy) => true) {
+        var multiTarget = tetrad.type.attackType.multiTarget;
+        var result = false;
         if (this.time % tetrad.type.attackType.attackDelay == 0) {
             for (var j = 0; j < this.enemyList.length; j++) {
                 var enemy = this.enemyList[j];
                 var enemyTilePosition = enemy.pathing.pixelPosition.asTilePoint(this.tileWidth, this.tileHeight);
                 if (Pathing.straightDistance(tetrad.position, enemyTilePosition) < tetrad.type.attackType.range) {
-                    this.doAttack(tetrad, enemy);
-                    return;
+                    if (predicate(enemy)) {
+                        this.doAttack(tetrad, enemy);
+                        if (!multiTarget) {
+                            return true;
+                        }
+                        else {
+                            result = true;
+                        }
+                    }
                 }
             }
         }
+        return result;
     }
     doAttack(tetrad, enemy) {
         tetrad.type.attackType.apply(enemy);

@@ -1,10 +1,11 @@
 export class AttackType {
-    constructor(damage, attackDelay, range, slowing, slowTime) {
+    constructor(damage, attackDelay, range, slowing, slowTime, multiTarget = false) {
         this.damage = damage;
         this.attackDelay = attackDelay;
         this.range = range;
         this.slowing = slowing;
         this.slowTime = slowTime;
+        this.multiTarget = multiTarget;
     }
     apply(enemy) {
         enemy.hp = enemy.hp - this.damage;
@@ -12,5 +13,8 @@ export class AttackType {
     }
     bigify() {
         return new AttackType(this.damage * 3, Math.ceil(this.attackDelay / 3), this.range * 3, this.slowing, this.slowTime * 2);
+    }
+    slows() {
+        return this.slowing < 1;
     }
 }

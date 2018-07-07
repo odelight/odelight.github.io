@@ -14,6 +14,9 @@ export class Enemy {
             this.slowingTimer = slowTime;
         }
     }
+    isSlowed() {
+        return this.currentSpeed < this.type.speed;
+    }
     updateEffectTimers() {
         if (this.slowingTimer <= 0) {
             return;

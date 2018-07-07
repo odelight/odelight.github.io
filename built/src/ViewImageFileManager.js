@@ -9,9 +9,11 @@ export class ViewImageFileManager {
         this.enemyTypes = 3;
         this.tetradImages = [];
         this.attackImages = [];
+        this.waypointImages = [];
         this.createEnemies();
         this.createTetradTiles();
         this.createAttackImages();
+        this.createWaypointImages();
     }
     createEnemies() {
         for (var enemyTypeIndex = 0; enemyTypeIndex < this.enemyTypes; enemyTypeIndex++) {
@@ -41,6 +43,14 @@ export class ViewImageFileManager {
             var image = document.createElement('img');
             image.src = this.imagePath + imageName;
             this.attackImages[index] = image;
+        }
+    }
+    createWaypointImages() {
+        for (var i = 1; i < 100; i++) {
+            var imageName = "waypoint_" + i + this.imageFileExtension;
+            var image = document.createElement('img');
+            image.src = this.imagePath + imageName;
+            this.waypointImages[i] = image;
         }
     }
     getTetradImage(type) {
@@ -74,5 +84,8 @@ export class ViewImageFileManager {
     }
     getAttackImage(attackType) {
         return this.attackImages[this.getTypeIndex(attackType.name)];
+    }
+    getWaypointImage(index) {
+        return this.waypointImages[index];
     }
 }
