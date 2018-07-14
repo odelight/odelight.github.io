@@ -1,7 +1,7 @@
 import { TilePoint } from "./TilePoint.js";
 import { Util } from "./Util.js";
 import { Controller } from "./Controller.js";
-import { tetradO, tetradI, TetradType, tetradS, tetradJ, tetradL, tetradT } from "./TetradType.js";
+import { tetradO, tetradI, tetradS, tetradZ, tetradJ, tetradL, tetradT } from "./TetradType.js";
 import { LevelBuilder } from "./LevelBuilder.js";
 import { AudioService } from "./AudioService.js";
 var canvas = Util.checkType(document.getElementById("gameCanvas"), HTMLCanvasElement);
@@ -25,8 +25,8 @@ function start() {
     levelLoaders[9] = getLevelTen;
     controller = new Controller(document);
     var startLevel = getStartLevel();
+    AudioService.setSoundStatus(getSoundStatus());
     loadLevel(startLevel);
-    //loadLevel(5);
     setIntermediateScreen("Press anywhere to start the game", currentLevel.view);
     var updateVar = setInterval(updateLevel, 10);
 }
@@ -42,6 +42,21 @@ function getStartLevel() {
         return 0;
     }
     return startLevel;
+}
+function getSoundStatus() {
+    var url_string = window.location.href;
+    var url = new URL(url_string);
+    var soundString = url.searchParams.get("sound");
+    if (soundString != null) {
+        soundString = soundString.trim().toLocaleLowerCase();
+        if (soundString == "muted") {
+            return AudioService.MUTED;
+        }
+        if (soundString == "musicoff") {
+            return AudioService.MUSIC_OFF;
+        }
+    }
+    return AudioService.SOUND_ON;
 }
 function loadLevel(levelIndex) {
     AudioService.playMusicForLevel(levelIndex);
@@ -105,7 +120,7 @@ function getLevelOne() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 1), new TilePoint(39, 39), new TilePoint(1, 39)])
         .withCanvas(canvas)
-        .withTetradFactory(TetradType.getRandomTetrad)
+        .withTetradFactory(getListBasedTetradTypeFactory([tetradS, tetradT, tetradJ, tetradO, tetradI, tetradZ, tetradL]))
         .withBlackPoints([])
         .build();
     return level;
@@ -194,9 +209,13 @@ function getLevelSix() {
     return level;
 }
 function getLevelSeven() {
-    var spawnTimes = [];
-    for (var i = 1; i <= 35; i++) {
-        spawnTimes.push(1000 + i * 350);
+    var aSpawnTimes = [];
+    var bSpawnTimes = [];
+    for (var i = 1; i <= 24; i++) {
+        aSpawnTimes.push(1000 + i * (350 - 4 * i));
+        if (i > 10) {
+            bSpawnTimes.push(1000 + i * (350 - 4 * i));
+        }
     }
     var blackPoints = [];
     for (var i = 0; i <= 31; i++) {
@@ -206,7 +225,7 @@ function getLevelSeven() {
     }
     var level = new LevelBuilder()
         .withLives(5)
-        .withEnemySpawnTimes([spawnTimes, [], []])
+        .withEnemySpawnTimes([aSpawnTimes, bSpawnTimes, []])
         .withBoardWidth(40)
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(20, 1), new TilePoint(20, 39)])
@@ -242,9 +261,13 @@ function getLevelEight() {
     return level;
 }
 function getLevelNine() {
-    var spawnTimes = [];
+    var aSpawnTimes = [];
+    var bSpawnTimes = [];
     for (var i = 1; i <= 30; i++) {
-        spawnTimes.push(1000 + i * 350);
+        aSpawnTimes.push(1000 + i * 300);
+        if (i > 10) {
+            bSpawnTimes.push(1000 + i * 350);
+        }
     }
     var blackPoints = [];
     for (var i = 0; i < 6; i++) {
@@ -253,7 +276,7 @@ function getLevelNine() {
     }
     var level = new LevelBuilder()
         .withLives(5)
-        .withEnemySpawnTimes([spawnTimes, [], []])
+        .withEnemySpawnTimes([aSpawnTimes, bSpawnTimes, []])
         .withBoardWidth(40)
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 1), new TilePoint(39, 39), new TilePoint(1, 39), new TilePoint(1, 2)])

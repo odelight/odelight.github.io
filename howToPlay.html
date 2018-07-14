@@ -1,0 +1,92 @@
+<!doctype html>
+<meta charset="UTF-8">
+<html lang="en">
+
+<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-122319530-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-122319530-1');
+</script>
+<title>TetraDefense - How to play</title>
+</head>
+<body>
+<h1>How to play</h1>
+<h2>Basics</h2>
+<img src="/resources/webpageGraphics/level1_annotated.png" alt="Annotated view of game"><br>
+Controls:<br>
+-Left click to place tetrads - press spacebar to rotate the orientation of the upcoming tetrad.<br>
+-The goal of the game is to prevent the enemies from getting to the last waypoint. You win the game once all enemies have spawned and disappeared off the map (either killed or reaching the last waypoint) and you still have lives remaining.<br>
+-The enemies spawn right next to the waypoint labelled "1", and move sequentially between waypoints. You can place tetrads on the map which will both lengthen the path enemies have to take between waypoints, and attack enemies. You are not allowed to place tetrads that will block the enemies path between waypoints.<br>
+-The red lines between waypoints show the path that enemies will walk along between the tetrads, in order to make it easier for you to construct your maze.<br>
+-The placement timer in the top right shows how long you have to wait before you'll be able to place your next tetrad.<br> 
+-If you want to start at a particular level, for example 5, you can go directly to it with a URL like this: <a href="http://tetradefense.com/tetraDefense.html?startLevel=5">http://tetradefense.com/tetraDefense.html?startLevel=5</a> (replace 5 with whatever level you'd like to start on)<br>
+-If you want to turn off all sound, or just the music, you can do so with URLs like the following: <a href="http://tetradefense.com/tetraDefense.html?sound=muted">http://tetradefense.com/tetraDefense.html?sound=muted</a> (muted), <a href="http://tetradefense.com/tetraDefense.html?sound=musicoff">http://tetradefense.com/tetraDefense.html?sound=musicoff</a> (music off, sound effects still on). For an example of combining this with a nonstandard start level: <a href="http://localhost/tetraDefense.html?startLevel=2&sound=musicOff">http://localhost/tetraDefense.html?startLevel=2&sound=musicOff</a>
+
+<h2>Big Tetrads</h2><br>
+<img src="/resources/webpageGraphics/combo_part1.png">
+<img src="/resources/webpageGraphics/combo_part2.png"><br>
+
+If you place four tetrads in a configuration that creates the shape of a larger tetrad, you will create a superior "big tetrad". You must use exactly four smaller tetrads to create the big tetrad, but other than that, anything's game! Big tetrads are more powerful versions of their small counterparts. See Tetrad Types section for details.
+<h2>Tetrad Types</h2><br>
+There are seven tetrad types:<br><br>
+
+<h3>O</h3>
+Damage:200<br>
+Attack Cooldown: 200<br>
+Range: 50<br>
+Special: Slows enemies<br><br>
+<img src="/resources/webpageGraphics/tetradO.png"><br>
+
+<h3>I</h3>
+Damage:200<br>
+Attack Cooldown: 100<br>
+Range: 40<br>
+Special: N/A<br><br>
+<img src="/resources/webpageGraphics/tetradI.png"><br>
+
+<h3>S</h3>
+Damage:100<br>
+Attack Cooldown: 50<br>
+Range: 20<br>
+Special: N/A<br><br>
+<img src="/resources/webpageGraphics/tetradS.png"><br>
+
+<h3>Z</h3>
+Damage:100<br>
+Attack Cooldown: 50<br>
+Range: 20<br>
+Special: N/A<br><br>
+<img src="/resources/webpageGraphics/tetradZ.png"><br>
+
+<h3>L</h3>
+Damage:40<br>
+Attack Cooldown: 100<br>
+Range: 10<br>
+Special: Attacks all enemies in range at once<br><br>
+<img src="/resources/webpageGraphics/tetradL.png"><br>
+
+<h3>J</h3>
+Damage:40<br>
+Attack Cooldown: 100<br>
+Range: 10<br>
+Special: Attacks all enemies in range at once<br><br>
+<img src="/resources/webpageGraphics/tetradJ.png"><br>
+
+<h3>T</h3>
+Damage:45<br>
+Attack Cooldown: 20<br>
+Range: 10<br>
+Special: N/A<br><br>
+<img src="/resources/webpageGraphics/tetradT.png"><br>
+
+Big tetrads have similar attributes to their smaller versions but with:<br><br>
+-Triple the damage<br>
+-One third the attack cooldown(rounded up)<br>
+-Triple the range<br>
+-Slowing effect lasts twice as long(for O tetrads)<br>
+</body>

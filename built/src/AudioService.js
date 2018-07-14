@@ -1,6 +1,9 @@
 export class AudioService {
+    static setSoundStatus(soundStatus) {
+        this.soundStatus = soundStatus;
+    }
     static playErrorSound() {
-        if (AudioService.muted) {
+        if (AudioService.soundStatus >= AudioService.MUTED) {
             return;
         }
         var clonedNode = this.ErrorSound.cloneNode();
@@ -8,33 +11,33 @@ export class AudioService {
         clonedNode.play();
     }
     static playBuildTetradSound() {
-        if (AudioService.muted) {
+        if (AudioService.soundStatus >= AudioService.MUTED) {
             return;
         }
         this.buildTetradSound.cloneNode().play();
     }
     static playEliteTetradSound() {
-        if (AudioService.muted) {
+        if (AudioService.soundStatus >= AudioService.MUTED) {
             return;
         }
         this.EliteTetradSound.cloneNode().play();
     }
     static playVictorySound() {
-        if (AudioService.muted) {
+        if (AudioService.soundStatus >= AudioService.MUTED) {
             return;
         }
         this.stopMusic();
         this.victorySound.play();
     }
     static playDefeatSound() {
-        if (AudioService.muted) {
+        if (AudioService.soundStatus >= AudioService.MUTED) {
             return;
         }
         this.stopMusic();
         this.defeatSound.play();
     }
     static playMusicForLevel(levelIndex) {
-        if (AudioService.muted) {
+        if (AudioService.soundStatus >= AudioService.MUSIC_OFF) {
             return;
         }
         if (!this.audioPlaying) {
@@ -47,7 +50,7 @@ export class AudioService {
         }
     }
     static stopMusic() {
-        if (AudioService.muted) {
+        if (AudioService.soundStatus >= AudioService.MUSIC_OFF) {
             return;
         }
         for (var i = 0; i < this.audio.length; i++) {
@@ -56,7 +59,7 @@ export class AudioService {
         this.audioPlaying = false;
     }
     static playMusic(audio) {
-        if (AudioService.muted) {
+        if (AudioService.soundStatus >= AudioService.MUSIC_OFF) {
             return;
         }
         audio.loop = true;
@@ -68,6 +71,9 @@ export class AudioService {
         }
     }
 }
+AudioService.SOUND_ON = 0;
+AudioService.MUSIC_OFF = 1;
+AudioService.MUTED = 2;
 AudioService.audio = [new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/2a15a8a2/resources/Journey.mp3'), new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/3c14b21e/resources/Dixie.mp3')];
 AudioService.victorySound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/1c5d275a/resources/Victory.mp3');
 AudioService.defeatSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/45552d4c/resources/Defeat.mp3');
@@ -75,4 +81,4 @@ AudioService.buildTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetra
 AudioService.EliteTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/45552d4c/resources/Elite_Tetrad.mp3');
 AudioService.ErrorSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/f537c382/resources/Error.mp3');
 AudioService.audioPlaying = false;
-AudioService.muted = false;
+AudioService.soundStatus = AudioService.SOUND_ON;

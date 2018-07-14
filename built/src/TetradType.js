@@ -9,11 +9,6 @@ export class TetradType {
         this.isBig = isBig;
         this.offsetList = offsetList;
     }
-    static getRandomTetrad() {
-        var N = tetradTypes.length;
-        var i = Math.floor(Math.random() * N);
-        return tetradTypes[i];
-    }
     static rotateTetrad(T) {
         var rotatedList = [];
         for (var i = 0; i < T.offsetList.length; i++) {
@@ -35,8 +30,8 @@ export class TetradType {
         return this.offsetList.map(x => x.blockedTiles).reduce((x, y) => x.concat(y));
     }
 }
-export var tetradO = new TetradType('O', 0.5, 0.5, new AttackType(50, 200, 50, 0.5, 500), [TetradTile.getTetradTileFromCoords(0, 0), TetradTile.getTetradTileFromCoords(1, 0), TetradTile.getTetradTileFromCoords(1, 1), TetradTile.getTetradTileFromCoords(0, 1)]);
-export var tetradI = new TetradType('I', 0.0, 1.5, new AttackType(160, 100, 40, 1, 0), [TetradTile.getTetradTileFromCoords(0, 0), TetradTile.getTetradTileFromCoords(0, 1), TetradTile.getTetradTileFromCoords(0, 2), TetradTile.getTetradTileFromCoords(0, 3)]);
+export var tetradO = new TetradType('O', 0.5, 0.5, new AttackType(200, 200, 50, 0.5, 500), [TetradTile.getTetradTileFromCoords(0, 0), TetradTile.getTetradTileFromCoords(1, 0), TetradTile.getTetradTileFromCoords(1, 1), TetradTile.getTetradTileFromCoords(0, 1)]);
+export var tetradI = new TetradType('I', 0.0, 1.5, new AttackType(200, 100, 40, 1, 0), [TetradTile.getTetradTileFromCoords(0, 0), TetradTile.getTetradTileFromCoords(0, 1), TetradTile.getTetradTileFromCoords(0, 2), TetradTile.getTetradTileFromCoords(0, 3)]);
 export var tetradS = new TetradType('S', 1.0, 0.5, new AttackType(100, 50, 20, 1, 0), [TetradTile.getTetradTileFromCoords(1, 0), TetradTile.getTetradTileFromCoords(2, 0), TetradTile.getTetradTileFromCoords(0, 1), TetradTile.getTetradTileFromCoords(1, 1)]);
 export var tetradZ = new TetradType('Z', 1.0, 0.5, new AttackType(100, 50, 20, 1, 0), [TetradTile.getTetradTileFromCoords(0, 0), TetradTile.getTetradTileFromCoords(1, 0), TetradTile.getTetradTileFromCoords(1, 1), TetradTile.getTetradTileFromCoords(2, 1)]);
 export var tetradL = new TetradType('L', 0.5, 1, new AttackType(40, 100, 10, 1, 0, true), [TetradTile.getTetradTileFromCoords(0, 0), TetradTile.getTetradTileFromCoords(0, 1), TetradTile.getTetradTileFromCoords(0, 2), TetradTile.getTetradTileFromCoords(1, 2)]);

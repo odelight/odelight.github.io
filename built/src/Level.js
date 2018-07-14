@@ -86,7 +86,7 @@ export class Level {
         var drawPos = this.getDrawPositionFromMouse(x, y, this.nextTetrad);
         if (this.towerTimer <= 0 && this.canPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y)) {
             this.pushTetrad(new Tetrad(this.nextTetrad, drawPos.x, drawPos.y));
-            this.towerTimer = this.towerBuildDelay;
+            this.towerTimer += this.towerBuildDelay;
             this.advanceComingTetrads();
         }
         else {
@@ -115,7 +115,7 @@ export class Level {
             this.view.drawTetrad(this.ghostTetrad.type, this.ghostTetrad.position.x, this.ghostTetrad.position.y, true, this.tetradPlacementLegal, this.towerTimer > 0);
         }
         var timerXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 4);
-        this.view.drawTimer(this.towerTimer / this.towerBuildDelay, timerXCenter, this.displayRegionWidth / 4, this.displayRegionWidth / 8);
+        this.view.drawTimer(Math.max(0, this.towerTimer) / this.towerBuildDelay, timerXCenter, this.displayRegionWidth / 4, this.displayRegionWidth / 8);
         var livesXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 2);
         this.view.drawLives(this.lives, 20, livesXCenter, this.displayRegionWidth / 4);
         this.view.drawUpcomingTetrads(this.comingTetrads);
