@@ -124,8 +124,8 @@ export class Level {
     }
     cheapCanPlaceLegally(T, xPosition, yPosition) {
         for (var i = 0; i < T.offsetList.length; i++) {
-            var xCoord = xPosition + T.offsetList[i].xOffset;
-            var yCoord = yPosition + T.offsetList[i].yOffset;
+            var xCoord = xPosition + T.offsetList[i].x;
+            var yCoord = yPosition + T.offsetList[i].y;
             var tilePoint = new TilePoint(xCoord, yCoord);
             if (xCoord < 0 || xCoord >= this.boardWidth || yCoord < 0 || yCoord >= this.boardHeight) {
                 return false;
@@ -173,8 +173,8 @@ export class Level {
             }
             this.tetradList.push(bigTetrad);
         }
-        for (var i = 0; i < T.type.offsetList.length; i++) {
-            this.mapGrid.setBlocked(T.type.offsetList[i].offset(T.position));
+        for (var i = 0; i < T.type.blockedList.length; i++) {
+            this.mapGrid.setBlocked(T.type.blockedList[i].offset(T.position));
         }
         this.updatePatherMapGrid();
         for (var i = 0; i < this.enemyList.length; i++) {

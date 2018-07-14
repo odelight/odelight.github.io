@@ -57,7 +57,7 @@ export class View {
     }
     drawSquareList(xPosition, yPosition, tile, offsetList) {
         for (var i = 0; i < offsetList.length; i++) {
-            this.drawSquare(xPosition + offsetList[i].xOffset, yPosition + offsetList[i].yOffset, tile);
+            this.drawSquare(xPosition + offsetList[i].x, yPosition + offsetList[i].y, tile);
         }
     }
     drawBlockedSpaces(blackPoints) {

@@ -10,6 +10,8 @@ export class ViewImageFileManager {
         this.tetradImages = [];
         this.attackImages = [];
         this.waypointImages = [];
+        this.IMAGE_DIMENSION = '20';
+        this.BIG_IMAGE_DIMENSION = '40';
         this.createEnemies();
         this.createTetradTiles();
         this.createAttackImages();
@@ -20,7 +22,7 @@ export class ViewImageFileManager {
             this.enemyImages[enemyTypeIndex] = [];
             var enemyImageArray = this.enemyImages[enemyTypeIndex];
             for (var healthIndex = this.minHealth; healthIndex < this.maxHealth; healthIndex++) {
-                var imageName = "enemy" + enemyTypeIndex + "_" + healthIndex + this.imageFileExtension;
+                var imageName = "enemy" + enemyTypeIndex + "_" + healthIndex + "_" + this.IMAGE_DIMENSION + this.imageFileExtension;
                 var image = document.createElement('img');
                 image.src = this.imagePath + imageName;
                 enemyImageArray[healthIndex] = image;
@@ -28,18 +30,22 @@ export class ViewImageFileManager {
         }
     }
     createTetradTiles() {
-        for (var index in this.tetradTypes) {
-            var type = this.tetradTypes[index];
-            var imageName = type + "_COLOR" + this.imageFileExtension;
-            var image = document.createElement('img');
-            image.src = this.imagePath + imageName;
-            this.tetradImages[index] = image;
+        for (var dimensionIndex = 0; dimensionIndex < 2; dimensionIndex++) {
+            var dimension = dimensionIndex == 0 ? this.IMAGE_DIMENSION : this.BIG_IMAGE_DIMENSION;
+            this.tetradImages[dimensionIndex] = [];
+            for (var index in this.tetradTypes) {
+                var type = this.tetradTypes[index];
+                var imageName = type + "_COLOR" + "_" + dimension + this.imageFileExtension;
+                var image = document.createElement('img');
+                image.src = this.imagePath + imageName;
+                this.tetradImages[dimensionIndex][index] = image;
+            }
         }
     }
     createAttackImages() {
         for (var index in this.tetradTypes) {
             var type = this.tetradTypes[index];
-            var imageName = type + "_COLOR_ATTACK" + this.imageFileExtension;
+            var imageName = type + "_COLOR_ATTACK" + "_" + this.IMAGE_DIMENSION + this.imageFileExtension;
             var image = document.createElement('img');
             image.src = this.imagePath + imageName;
             this.attackImages[index] = image;
@@ -47,14 +53,14 @@ export class ViewImageFileManager {
     }
     createWaypointImages() {
         for (var i = 1; i < 100; i++) {
-            var imageName = "waypoint_" + i + this.imageFileExtension;
+            var imageName = "waypoint_" + i + "_" + this.IMAGE_DIMENSION + this.imageFileExtension;
             var image = document.createElement('img');
             image.src = this.imagePath + imageName;
             this.waypointImages[i] = image;
         }
     }
     getTetradImage(type) {
-        return this.tetradImages[this.getTypeIndex(type.name)];
+        return this.tetradImages[type.isBig ? 1 : 0][this.getTypeIndex(type.name)];
     }
     getTypeIndex(input) {
         var result = this.tetradTypes.indexOf(input);
@@ -64,13 +70,13 @@ export class ViewImageFileManager {
         return result;
     }
     getGhostTetradImage() {
-        return this.tetradImages[this.getTypeIndex('GHOST')];
+        return this.tetradImages[0][this.getTypeIndex('GHOST')];
     }
     getBlockedTetradImage() {
-        return this.tetradImages[this.getTypeIndex('BLOCKED')];
+        return this.tetradImages[0][this.getTypeIndex('BLOCKED')];
     }
     getBlackTetradImage() {
-        return this.tetradImages[this.getTypeIndex('BLACK')];
+        return this.tetradImages[0][this.getTypeIndex('BLACK')];
     }
     getEnemyImage(type, health) {
         health = Math.floor(health);

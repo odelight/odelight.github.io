@@ -1,7 +1,7 @@
 import { Heap } from "./Heap.js";
 import { TilePoint } from "./TilePoint.js";
 import { PathingPoint } from "./PathingPoint.js";
-import { PointOffset } from "./PointOffset.js";
+import { TileOffset } from "./TileOffset.js";
 import { PointSet } from "./PointSet.js";
 import { PointMap } from "./PointMap.js";
 export class Pathing {
@@ -61,8 +61,8 @@ export class Pathing {
     }
     getNeighbors(node, tetrad) {
         var neighbors = [];
-        var potentialNeighborOffsets = [new PointOffset(0, -1), new PointOffset(-1, 0),
-            new PointOffset(1, 0), new PointOffset(0, 1)];
+        var potentialNeighborOffsets = [new TileOffset(0, -1), new TileOffset(-1, 0),
+            new TileOffset(1, 0), new TileOffset(0, 1)];
         var diagonalPotentialNeighborOffsets = [{ x: 1, y: 1, sub: [{ x: 1, y: 0 }, { x: 0, y: 1 }] },
             { x: 1, y: -1, sub: [{ x: 1, y: 0 }, { x: 0, y: -1 }] },
             { x: -1, y: -1, sub: [{ x: -1, y: 0 }, { x: 0, y: -1 }] },
@@ -101,8 +101,11 @@ export class Pathing {
     }
     isPointInTetrad(point, tetrad) {
         for (var i = 0; i < tetrad.type.offsetList.length; i++) {
-            if (point.equals(tetrad.type.offsetList[i].offset(tetrad.position))) {
-                return true;
+            for (var j = 0; j < tetrad.type.offsetList[i].blockedTiles.length; j++) {
+                var offset = tetrad.type.offsetList[i].blockedTiles[j];
+                if (point.equals(offset.offset(tetrad.position))) {
+                    return true;
+                }
             }
         }
         return false;

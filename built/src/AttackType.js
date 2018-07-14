@@ -12,7 +12,7 @@ export class AttackType {
         enemy.slow(this.slowing, this.slowTime);
     }
     bigify() {
-        return new AttackType(this.damage * 3, Math.ceil(this.attackDelay / 3), this.range * 3, this.slowing, this.slowTime * 2);
+        return new AttackType(this.damage * 3, Math.ceil(this.attackDelay / 3), this.range * 3, this.slowing, this.slowTime * 2, this.multiTarget);
     }
     slows() {
         return this.slowing < 1;
