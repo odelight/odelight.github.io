@@ -75,4 +75,4 @@ AudioService.buildTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetra
 AudioService.EliteTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/45552d4c/resources/Elite_Tetrad.mp3');
 AudioService.ErrorSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/f537c382/resources/Error.mp3');
 AudioService.audioPlaying = false;
-AudioService.muted = true;
+AudioService.muted = false;
