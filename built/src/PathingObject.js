@@ -8,7 +8,7 @@ export class PathingObject {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.targetWayPointIndex = 0;
-        var track = this.pathers[0].aStar(position);
+        var track = this.pathers[0].reconstructPath(position);
         if (track == null) {
             throw "Unable to create initial track";
         }
@@ -54,7 +54,7 @@ export class PathingObject {
     }
     recalculateCurrentTrack() {
         var currentPather = this.pathers[this.targetWayPointIndex];
-        var track = currentPather.aStar(this.pixelPosition.asTilePoint(this.tileWidth, this.tileHeight));
+        var track = currentPather.reconstructPath(this.pixelPosition.asTilePoint(this.tileWidth, this.tileHeight));
         if (track == null) {
             return false;
         }

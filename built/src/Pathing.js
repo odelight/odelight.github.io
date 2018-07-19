@@ -8,7 +8,7 @@ export class Pathing {
     static fullPath(pathers, start) {
         var fullPath = [];
         for (var i = 0; i < pathers.length; i++) {
-            var pathSegment = pathers[i].aStar(start);
+            var pathSegment = pathers[i].reconstructPath(start);
             if (pathSegment == null) {
                 return null;
             }
@@ -19,9 +19,6 @@ export class Pathing {
     }
     resetMap(newMapGrid, end, newTetrad) {
         this.shittyPath(end, newMapGrid, newTetrad);
-    }
-    aStar(start) {
-        return this.reconstructPath(start, this.cameFrom);
     }
     getEnd() {
         return this.end;
@@ -110,7 +107,7 @@ export class Pathing {
         }
         return false;
     }
-    reconstructPath(current, cameFrom) {
+    reconstructPath(current, cameFrom = this.cameFrom) {
         var path = [];
         path.push(current);
         while (cameFrom.has(current)) {

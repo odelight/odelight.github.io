@@ -52,7 +52,7 @@ export class ViewImageFileManager {
         }
     }
     createWaypointImages() {
-        for (var i = 1; i < 100; i++) {
+        for (var i = 1; i < 99; i++) {
             var imageName = "waypoint_" + i + "_" + this.IMAGE_DIMENSION + this.imageFileExtension;
             var image = document.createElement('img');
             image.src = this.imagePath + imageName;

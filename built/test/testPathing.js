@@ -9,7 +9,7 @@ export class TestPathing {
         var boardHeight = 2;
         var mapGrid = new MapGrid(boardWidth, boardHeight);
         pathing.resetMap(mapGrid, new TilePoint(2, 0), null);
-        var path = pathing.aStar(new TilePoint(0, 0));
+        var path = pathing.reconstructPath(new TilePoint(0, 0));
         if (path == null) {
             throw "Null path returned";
         }
@@ -19,7 +19,7 @@ export class TestPathing {
         TestUtils.assertEquals(path[1].y, 0);
         TestUtils.assertEquals(path[2].x, 2);
         TestUtils.assertEquals(path[2].y, 0);
-        var path2 = pathing.aStar(new TilePoint(0, 0));
+        var path2 = pathing.reconstructPath(new TilePoint(0, 0));
         if (path2 == null) {
             throw "Null path returned";
         }
@@ -31,7 +31,7 @@ export class TestPathing {
         TestUtils.assertEquals(path2[2].y, 0);
         mapGrid.setBlocked(new TilePoint(1, 0));
         pathing.resetMap(mapGrid, new TilePoint(2, 0), null);
-        path = pathing.aStar(new TilePoint(0, 0));
+        path = pathing.reconstructPath(new TilePoint(0, 0));
         if (path == null) {
             throw "Null path returned";
         }
@@ -41,7 +41,7 @@ export class TestPathing {
         TestUtils.assertEquals(path[1].y, 1);
         TestUtils.assertEquals(path[2].x, 2);
         TestUtils.assertEquals(path[2].y, 0);
-        path2 = pathing.aStar(new TilePoint(0, 0));
+        path2 = pathing.reconstructPath(new TilePoint(0, 0));
         if (path2 == null) {
             throw "Null path returned";
         }

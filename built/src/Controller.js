@@ -1,11 +1,26 @@
 import { Util } from "./Util.js";
+import { AudioService } from "./AudioService.js";
 export class Controller {
     constructor(document) {
         var canvas = Util.checkType(document.getElementById("gameCanvas"), HTMLCanvasElement);
         canvas.addEventListener('mousemove', Controller.staticOnMouseMove);
         canvas.addEventListener('click', Controller.staticOnMouseClick);
         document.addEventListener('keydown', Controller.staticOnKeyPress);
+        this.registerHtmlFormElements(document);
         Controller.instance = this;
+    }
+    registerHtmlFormElements(document) {
+        var soundOnRadio = Util.checkType(document.getElementById('soundOn'), HTMLInputElement);
+        var soundOffRadio = Util.checkType(document.getElementById('soundOff'), HTMLInputElement);
+        var musicOnRadio = Util.checkType(document.getElementById('musicOn'), HTMLInputElement);
+        var musicOffRadio = Util.checkType(document.getElementById('musicOff'), HTMLInputElement);
+        soundOnRadio.onclick = (() => AudioService.setSoundEffectsOn(true));
+        soundOffRadio.onclick = (() => AudioService.setSoundEffectsOn(false));
+        musicOnRadio.onclick = (() => AudioService.setMusicOn(true));
+        musicOffRadio.onclick = (() => AudioService.setMusicOn(false));
+    }
+    static turnSoundOn(a, b) {
+        return null;
     }
     setLevel(level) {
         this.level = level;

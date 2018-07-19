@@ -13,21 +13,22 @@ var waitingForClickToContinue = false;
 var currentLevel;
 start();
 function start() {
-    levelLoaders[0] = getLevelOne;
-    levelLoaders[1] = getLevelTwo;
-    levelLoaders[2] = getLevelThree;
-    levelLoaders[3] = getLevelFour;
-    levelLoaders[4] = getLevelFive;
-    levelLoaders[5] = getLevelSix;
-    levelLoaders[6] = getLevelSeven;
-    levelLoaders[7] = getLevelEight;
-    levelLoaders[8] = getLevelNine;
-    levelLoaders[9] = getLevelTen;
+    var i = 0;
+    levelLoaders[i++] = getLevelOne;
+    levelLoaders[i++] = getLevelTwo;
+    levelLoaders[i++] = getLevelThree;
+    //	levelLoaders[3] = getLevelFour;
+    levelLoaders[i++] = getLevelFive;
+    levelLoaders[i++] = getLevelSix;
+    levelLoaders[i++] = getLevelSeven;
+    levelLoaders[i++] = getLevelEight;
+    levelLoaders[i++] = getLevelNine;
+    levelLoaders[i++] = getLevelTen;
     controller = new Controller(document);
     var startLevel = getStartLevel();
-    AudioService.setSoundStatus(getSoundStatus());
     loadLevel(startLevel);
     setIntermediateScreen("Press anywhere to start the game", currentLevel.view);
+    populateLevelSelector(document, levelLoaders);
     var updateVar = setInterval(updateLevel, 10);
 }
 function getStartLevel() {
@@ -42,21 +43,6 @@ function getStartLevel() {
         return 0;
     }
     return startLevel;
-}
-function getSoundStatus() {
-    var url_string = window.location.href;
-    var url = new URL(url_string);
-    var soundString = url.searchParams.get("sound");
-    if (soundString != null) {
-        soundString = soundString.trim().toLocaleLowerCase();
-        if (soundString == "muted") {
-            return AudioService.MUTED;
-        }
-        if (soundString == "musicoff") {
-            return AudioService.MUSIC_OFF;
-        }
-    }
-    return AudioService.SOUND_ON;
 }
 function loadLevel(levelIndex) {
     AudioService.playMusicForLevel(levelIndex);
@@ -108,6 +94,19 @@ function setIntermediateScreen(text, view) {
 function isLastLevel(level) {
     return level >= levelLoaders.length - 1;
 }
+function populateLevelSelector(document, levelLoaders) {
+    var levelSelector = Util.checkType(document.getElementById('levels'), HTMLSelectElement);
+    for (var i = 0; i < levelLoaders.length; i++) {
+        var option = document.createElement("option");
+        option.text = "" + makeLevelUserDisplayable(i);
+        option.value = "" + i;
+        levelSelector.add(option);
+    }
+    levelSelector.onchange = (ev) => {
+        loadLevel(parseInt(levelSelector.options[levelSelector.selectedIndex].value));
+        setIntermediateScreen("Press anywhere to start the level", currentLevel.view);
+    };
+}
 function getLevelOne() {
     var spawnTimes = [];
     for (var i = 1; i <= 3; i++) {
@@ -155,19 +154,21 @@ function getLevelThree() {
         .build();
     return level;
 }
-function getLevelFour() {
-    var level = new LevelBuilder()
-        .withLives(2)
-        .withEnemySpawnTimes([[500, 1000, 1500], [2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000], []])
-        .withBoardWidth(40)
-        .withBoardHeight(40)
-        .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 39), new TilePoint(1, 39), new TilePoint(39, 1)])
-        .withCanvas(canvas)
-        .withTetradFactory(getListBasedTetradTypeFactory([tetradL, tetradJ]))
-        .withBlackPoints([])
-        .build();
+/*
+function getLevelFour() : Level {
+    var level : Level = new LevelBuilder()
+    .withLives(2)
+    .withEnemySpawnTimes([[500, 1000, 1500],[2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000], []])
+    .withBoardWidth(40)
+    .withBoardHeight(40)
+    .withWayPoints([new TilePoint(1,1), new TilePoint(39,39), new TilePoint(1,39), new TilePoint(39,1)])
+    .withCanvas(canvas)
+    .withTetradFactory(getListBasedTetradTypeFactory([tetradL, tetradJ]))
+    .withBlackPoints([])
+    .build();
     return level;
 }
+*/
 function getLevelFive() {
     var bSpawnTimes = [];
     for (var i = 1; i <= 30; i++) {

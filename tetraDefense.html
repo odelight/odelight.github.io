@@ -13,9 +13,42 @@
 </head>
 <meta charset="UTF-8">
 <html lang="en">
+
 <body>
+<table>
+<tr>
+<td>
 <canvas id="gameCanvas" style="border:1px solid #000000;">
 </canvas>
+</td>
+
+<td valign="top">
+Sound Effects: <br>
+Music: <br>
+Jump to level:
+</td>
+
+<td valign="top">
+<input type="radio" id="soundOn" name="soundSetting" checked />
+<label for="soundOn">On</label>
+<input type="radio" id="soundOff" name="soundSetting" /> 
+<label for="soundOff">Off</label>
+<br>
+
+<input type="radio" id="musicOn" name="musicSetting" checked />
+<label for="musicOn">On</label>
+<input type="radio" id="musicOff" name="musicSetting" />
+<label for="musicOff">Off</label>
+<br>
+
+<select id="levels">
+</select>
+</td>
+
+</tr>
+</table>
+
 <script src="./built/src/Main.js" type="module"></script>
+
 </body>
 </html>
