@@ -14,16 +14,16 @@ var currentLevel;
 start();
 function start() {
     var i = 0;
-    levelLoaders[i++] = getLevelOne;
-    levelLoaders[i++] = getLevelTwo;
-    levelLoaders[i++] = getLevelThree;
+    levelLoaders[i++] = getBasicRandomLevel;
+    levelLoaders[i++] = getZLevel;
+    levelLoaders[i++] = getThreebarLevel;
     //	levelLoaders[3] = getLevelFour;
-    levelLoaders[i++] = getLevelFive;
-    levelLoaders[i++] = getLevelSix;
-    levelLoaders[i++] = getLevelSeven;
-    levelLoaders[i++] = getLevelEight;
-    levelLoaders[i++] = getLevelNine;
-    levelLoaders[i++] = getLevelTen;
+    levelLoaders[i++] = getCurlELevel;
+    levelLoaders[i++] = getCupLevel;
+    levelLoaders[i++] = getCircuitWithSTetrads;
+    levelLoaders[i++] = getCenterSquareLevel;
+    levelLoaders[i++] = getPepperedLevel;
+    levelLoaders[i++] = getFigureEightLevel;
     controller = new Controller(document);
     var startLevel = getStartLevel();
     loadLevel(startLevel);
@@ -107,7 +107,7 @@ function populateLevelSelector(document, levelLoaders) {
         setIntermediateScreen("Press anywhere to start the level", currentLevel.view);
     };
 }
-function getLevelOne() {
+function getBasicRandomLevel() {
     var spawnTimes = [];
     for (var i = 1; i <= 3; i++) {
         spawnTimes.push(i * 1300);
@@ -124,7 +124,7 @@ function getLevelOne() {
         .build();
     return level;
 }
-function getLevelTwo() {
+function getZLevel() {
     var level = new LevelBuilder()
         .withLives(2)
         .withEnemySpawnTimes([[800, 1600, 2400], [3200, 3800, 4400, 5000], []])
@@ -137,7 +137,7 @@ function getLevelTwo() {
         .build();
     return level;
 }
-function getLevelThree() {
+function getCircuitWithSTetrads() {
     var spawnTimes = [];
     for (var i = 1; i <= 28; i++) {
         spawnTimes.push(i * (350 - 7 * i));
@@ -169,7 +169,7 @@ function getLevelFour() : Level {
     return level;
 }
 */
-function getLevelFive() {
+function getCurlELevel() {
     var bSpawnTimes = [];
     for (var i = 1; i <= 30; i++) {
         bSpawnTimes.push(i * 250);
@@ -186,7 +186,7 @@ function getLevelFive() {
         .build();
     return level;
 }
-function getLevelSix() {
+function getCupLevel() {
     var spawnTimes = [];
     for (var i = 1; i <= 30; i++) {
         spawnTimes.push(1000 + i * (500 - 15 * i));
@@ -209,7 +209,7 @@ function getLevelSix() {
         .build();
     return level;
 }
-function getLevelSeven() {
+function getThreebarLevel() {
     var aSpawnTimes = [];
     var bSpawnTimes = [];
     for (var i = 1; i <= 24; i++) {
@@ -237,7 +237,7 @@ function getLevelSeven() {
         .build();
     return level;
 }
-function getLevelEight() {
+function getCenterSquareLevel() {
     var spawnTimes = [];
     for (var i = 1; i <= 40; i++) {
         spawnTimes.push(1000 + i * (300 - 4 * i));
@@ -261,7 +261,7 @@ function getLevelEight() {
         .build();
     return level;
 }
-function getLevelNine() {
+function getPepperedLevel() {
     var aSpawnTimes = [];
     var bSpawnTimes = [];
     for (var i = 1; i <= 30; i++) {
@@ -287,7 +287,7 @@ function getLevelNine() {
         .build();
     return level;
 }
-function getLevelTen() {
+function getFigureEightLevel() {
     var spawnTimes = [];
     for (var i = 1; i <= 45; i++) {
         spawnTimes.push(2000 + i * (350 - 5 * i));
