@@ -17,7 +17,6 @@ function start() {
     levelLoaders[i++] = getBasicRandomLevel;
     levelLoaders[i++] = getZLevel;
     levelLoaders[i++] = getThreebarLevel;
-    //	levelLoaders[3] = getLevelFour;
     levelLoaders[i++] = getCurlELevel;
     levelLoaders[i++] = getCupLevel;
     levelLoaders[i++] = getCircuitWithSTetrads;
@@ -109,8 +108,8 @@ function populateLevelSelector(document, levelLoaders) {
 }
 function getBasicRandomLevel() {
     var spawnTimes = [];
-    for (var i = 1; i <= 3; i++) {
-        spawnTimes.push(i * 1300);
+    for (var i = 0; i <= 3; i++) {
+        spawnTimes.push(i * 300);
     }
     var level = new LevelBuilder()
         .withLives(2)
@@ -119,7 +118,7 @@ function getBasicRandomLevel() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 1), new TilePoint(39, 39), new TilePoint(1, 39)])
         .withCanvas(canvas)
-        .withTetradFactory(getListBasedTetradTypeFactory([tetradS, tetradT, tetradJ, tetradO, tetradI, tetradZ, tetradL]))
+        .withTetradList(([tetradS, tetradT, tetradJ, tetradO, tetradI, tetradZ, tetradL, tetradS, tetradT, tetradJ, tetradO, tetradI, tetradZ, tetradL]))
         .withBlackPoints([])
         .build();
     return level;
@@ -127,20 +126,20 @@ function getBasicRandomLevel() {
 function getZLevel() {
     var level = new LevelBuilder()
         .withLives(2)
-        .withEnemySpawnTimes([[800, 1600, 2400], [3200, 3800, 4400, 5000], []])
+        .withEnemySpawnTimes([[200, 400, 600], [800, 1000], []])
         .withBoardWidth(40)
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 1), new TilePoint(1, 39), new TilePoint(39, 39)])
         .withCanvas(canvas)
-        .withTetradFactory(() => tetradO)
+        .withTetradList(repeatList([tetradO], 12))
         .withBlackPoints([])
         .build();
     return level;
 }
 function getCircuitWithSTetrads() {
     var spawnTimes = [];
-    for (var i = 1; i <= 28; i++) {
-        spawnTimes.push(i * (350 - 7 * i));
+    for (var i = 1; i <= 25; i++) {
+        spawnTimes.push(i * (40 - i));
     }
     var level = new LevelBuilder()
         .withLives(2)
@@ -149,30 +148,15 @@ function getCircuitWithSTetrads() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(1, 39), new TilePoint(39, 39), new TilePoint(39, 1), new TilePoint(2, 1)])
         .withCanvas(canvas)
-        .withTetradFactory(() => tetradS)
+        .withTetradList(repeatList([tetradS], 40))
         .withBlackPoints([])
         .build();
     return level;
 }
-/*
-function getLevelFour() : Level {
-    var level : Level = new LevelBuilder()
-    .withLives(2)
-    .withEnemySpawnTimes([[500, 1000, 1500],[2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000], []])
-    .withBoardWidth(40)
-    .withBoardHeight(40)
-    .withWayPoints([new TilePoint(1,1), new TilePoint(39,39), new TilePoint(1,39), new TilePoint(39,1)])
-    .withCanvas(canvas)
-    .withTetradFactory(getListBasedTetradTypeFactory([tetradL, tetradJ]))
-    .withBlackPoints([])
-    .build();
-    return level;
-}
-*/
 function getCurlELevel() {
     var bSpawnTimes = [];
-    for (var i = 1; i <= 30; i++) {
-        bSpawnTimes.push(i * 250);
+    for (var i = 1; i <= 15; i++) {
+        bSpawnTimes.push(i * 50);
     }
     var level = new LevelBuilder()
         .withLives(2)
@@ -181,7 +165,7 @@ function getCurlELevel() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(1, 30), new TilePoint(30, 30), new TilePoint(30, 10), new TilePoint(10, 10), new TilePoint(10, 39), new TilePoint(39, 39)])
         .withCanvas(canvas)
-        .withTetradFactory(() => tetradS)
+        .withTetradList(repeatList([tetradS], 40))
         .withBlackPoints([])
         .build();
     return level;
@@ -189,7 +173,7 @@ function getCurlELevel() {
 function getCupLevel() {
     var spawnTimes = [];
     for (var i = 1; i <= 30; i++) {
-        spawnTimes.push(1000 + i * (500 - 15 * i));
+        spawnTimes.push(100 + i * (50 - i));
     }
     var blackPoints = [];
     for (var i = 0; i <= 20; i++) {
@@ -204,7 +188,7 @@ function getCupLevel() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 1)])
         .withCanvas(canvas)
-        .withTetradFactory(() => tetradI)
+        .withTetradList(repeatList([tetradI], 16))
         .withBlackPoints(blackPoints)
         .build();
     return level;
@@ -213,9 +197,9 @@ function getThreebarLevel() {
     var aSpawnTimes = [];
     var bSpawnTimes = [];
     for (var i = 1; i <= 24; i++) {
-        aSpawnTimes.push(1000 + i * (350 - 4 * i));
+        aSpawnTimes.push(100 + i * 30);
         if (i > 10) {
-            bSpawnTimes.push(1000 + i * (350 - 4 * i));
+            bSpawnTimes.push(235 + i * 30);
         }
     }
     var blackPoints = [];
@@ -231,7 +215,7 @@ function getThreebarLevel() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(20, 1), new TilePoint(20, 39)])
         .withCanvas(canvas)
-        .withTetradFactory(() => tetradO)
+        .withTetradList(repeatList([tetradO], 32))
         .withBlackPoints(blackPoints)
         .withEnemySpawnPoint(new TilePoint(20, 0))
         .build();
@@ -240,7 +224,7 @@ function getThreebarLevel() {
 function getCenterSquareLevel() {
     var spawnTimes = [];
     for (var i = 1; i <= 40; i++) {
-        spawnTimes.push(1000 + i * (300 - 4 * i));
+        spawnTimes.push(100 + i * 30);
     }
     var blackPoints = [];
     for (var i = 0; i <= 23; i++) {
@@ -256,7 +240,7 @@ function getCenterSquareLevel() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(1, 39), new TilePoint(39, 39), new TilePoint(39, 1), new TilePoint(2, 1)])
         .withCanvas(canvas)
-        .withTetradFactory(() => tetradS)
+        .withTetradList(repeatList([tetradS], 40))
         .withBlackPoints(blackPoints)
         .build();
     return level;
@@ -265,9 +249,9 @@ function getPepperedLevel() {
     var aSpawnTimes = [];
     var bSpawnTimes = [];
     for (var i = 1; i <= 30; i++) {
-        aSpawnTimes.push(1000 + i * 300);
+        aSpawnTimes.push(100 + i * 30);
         if (i > 10) {
-            bSpawnTimes.push(1000 + i * 350);
+            bSpawnTimes.push(100 + i * 35);
         }
     }
     var blackPoints = [];
@@ -282,7 +266,7 @@ function getPepperedLevel() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 1), new TilePoint(39, 39), new TilePoint(1, 39), new TilePoint(1, 2)])
         .withCanvas(canvas)
-        .withTetradFactory(getListBasedTetradTypeFactory([tetradL, tetradJ]))
+        .withTetradList(repeatList([tetradL, tetradJ], 40))
         .withBlackPoints(blackPoints)
         .build();
     return level;
@@ -290,7 +274,7 @@ function getPepperedLevel() {
 function getFigureEightLevel() {
     var spawnTimes = [];
     for (var i = 1; i <= 45; i++) {
-        spawnTimes.push(2000 + i * (350 - 5 * i));
+        spawnTimes.push(200 + i * 35);
     }
     var level = new LevelBuilder()
         .withLives(5)
@@ -299,15 +283,16 @@ function getFigureEightLevel() {
         .withBoardHeight(40)
         .withWayPoints([new TilePoint(19, 1), new TilePoint(11, 9), new TilePoint(29, 27), new TilePoint(20, 36), new TilePoint(11, 27), new TilePoint(29, 9), new TilePoint(21, 1)])
         .withCanvas(canvas)
-        .withTetradFactory(() => tetradT)
+        .withTetradList(repeatList([tetradT], 40))
         .withBlackPoints([])
         .withEnemySpawnPoint(new TilePoint(20, 1))
         .build();
     return level;
 }
-function getListBasedTetradTypeFactory(typeList) {
-    var i = 0;
-    return () => {
-        return typeList[i++ % typeList.length];
-    };
+function repeatList(typeList, numTetrads) {
+    var result = [];
+    for (var i = 0; i < numTetrads; i++) {
+        result.push(typeList[i % typeList.length]);
+    }
+    return result;
 }

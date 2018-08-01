@@ -12,7 +12,8 @@ import { PathingObject } from "./PathingObject.js";
 import { EnemyTypes } from "./EnemyType.js";
 import { AudioService } from "./AudioService.js";
 export class Level {
-    constructor(lives, enemySpawnTimes, boardHeight, boardWidth, wayPoints, canvas, tetradFactory, blackPoints, enemySpawnPoint) {
+    constructor(lives, enemySpawnTimes, boardHeight, boardWidth, wayPoints, canvas, placeableTetradList, blackPoints, enemySpawnPoint) {
+        this.enemiesRunning = false;
         this.tetradPlacementLegal = true;
         this.isOver = false;
         this.wonGame = false;
@@ -32,9 +33,7 @@ export class Level {
         canvas.width = boardWidth * this.tileWidth + this.displayRegionWidth;
         canvas.height = boardHeight * this.tileHeight;
         this.context = Util.checkType(canvas.getContext("2d"), CanvasRenderingContext2D);
-        this.towerBuildDelay = 400;
         this.time = 0;
-        this.towerTimer = this.towerBuildDelay;
         this.remainingEnemies = 0;
         for (var i = 0; i < enemySpawnTimes.length; i++) {
             this.remainingEnemies += enemySpawnTimes[i].length;
@@ -52,48 +51,72 @@ export class Level {
         this.updatePatherMapGrid();
         this.enemySpawnPoint = enemySpawnPoint;
         this.fullPath = Pathing.fullPath(this.pathers, this.enemySpawnPoint);
-        this.tetradFactory = tetradFactory;
-        this.nextTetrad = this.getNextTetrad();
+        this.placeableTetradList = placeableTetradList;
+        var firstTetrad = this.getNextTetrad();
+        if (firstTetrad != null) {
+            this.nextTetrad = firstTetrad;
+        }
         for (var i = 0; i < 12; i++) {
-            this.comingTetrads.push(this.getNextTetrad());
+            var nextTetrad = this.getNextTetrad();
+            if (nextTetrad != null) {
+                this.comingTetrads.push(nextTetrad);
+            }
         }
     }
     advanceComingTetrads() {
         var comingTetrad = this.comingTetrads.shift();
         if (comingTetrad == null) {
-            throw "Unexpectedly null next tetrad";
+            this.nextTetrad = null;
+            return false;
         }
         this.nextTetrad = comingTetrad;
-        this.comingTetrads.push(this.getNextTetrad());
+        var nextTetrad = this.getNextTetrad();
+        if (nextTetrad != null) {
+            this.comingTetrads.push(nextTetrad);
+        }
+        return true;
     }
     getNextTetrad() {
-        return this.tetradFactory();
-    }
-    start() {
-        this.updateVar = setInterval(Level.staticUpdate(this), 10);
-    }
-    //workaround for strange behavior with setInterval where it will try to call non-static methods statically
-    static staticUpdate(level) {
-        level.update();
+        var result = this.placeableTetradList.shift();
+        if (result !== undefined) {
+            return result;
+        }
+        else {
+            return null;
+        }
     }
     updateGhostTetrad(rawMouseX, rawMouseY) {
+        if (this.nextTetrad == null) {
+            this.ghostTetrad = null;
+            return;
+        }
         var drawPos = this.getDrawPositionFromMouse(rawMouseX, rawMouseY, this.nextTetrad);
         this.clearAndDrawStatic();
         this.ghostTetrad = new Tetrad(this.nextTetrad, drawPos.x, drawPos.y);
         this.tetradPlacementLegal = this.cheapCanPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y);
     }
+    startSpawningEnemies() {
+        this.enemiesRunning = true;
+    }
     tryPlaceTetrad(x, y) {
+        if (this.nextTetrad == null) {
+            return;
+        }
         var drawPos = this.getDrawPositionFromMouse(x, y, this.nextTetrad);
-        if (this.towerTimer <= 0 && this.canPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y)) {
+        if (this.nextTetrad != null && this.canPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y)) {
             this.pushTetrad(new Tetrad(this.nextTetrad, drawPos.x, drawPos.y));
-            this.towerTimer += this.towerBuildDelay;
-            this.advanceComingTetrads();
+            if (!this.advanceComingTetrads()) {
+                this.startSpawningEnemies();
+            }
         }
         else {
             AudioService.playErrorSound();
         }
     }
     tryRotateTetrad(rawMouseX, rawMouseY) {
+        if (this.nextTetrad == null) {
+            return;
+        }
         this.nextTetrad = TetradType.rotateTetrad(this.nextTetrad);
         this.updateGhostTetrad(rawMouseX, rawMouseY);
     }
@@ -112,10 +135,9 @@ export class Level {
         this.view.drawEnemies(this.enemyList);
         this.view.drawAttacks(this.attackList);
         if (this.ghostTetrad != null) {
-            this.view.drawTetrad(this.ghostTetrad.type, this.ghostTetrad.position.x, this.ghostTetrad.position.y, true, this.tetradPlacementLegal, this.towerTimer > 0);
+            this.view.drawTetrad(this.ghostTetrad.type, this.ghostTetrad.position.x, this.ghostTetrad.position.y, true, this.tetradPlacementLegal);
         }
         var timerXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 4);
-        this.view.drawTimer(Math.max(0, this.towerTimer) / this.towerBuildDelay, timerXCenter, this.displayRegionWidth / 4, this.displayRegionWidth / 8);
         var livesXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 2);
         this.view.drawLives(this.lives, 20, livesXCenter, this.displayRegionWidth / 4);
         this.view.drawUpcomingTetrads(this.comingTetrads);
@@ -188,12 +210,13 @@ export class Level {
         }
     }
     update() {
-        this.spawnEnemies();
-        this.doAttacks();
-        this.updateEnemies();
+        if (this.enemiesRunning) {
+            this.spawnEnemies();
+            this.doAttacks();
+            this.updateEnemies();
+            this.time++;
+        }
         this.clearAndDrawStatic();
-        this.time++;
-        this.towerTimer--;
     }
     updateEnemies() {
         for (var i = 0; i < this.enemyList.length; i++) {

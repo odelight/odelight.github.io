@@ -28,8 +28,8 @@ export class LevelBuilder {
         this.canvas = canvas;
         return this;
     }
-    withTetradFactory(tetradFactory) {
-        this.tetradFactory = tetradFactory;
+    withTetradList(tetradList) {
+        this.tetradList = tetradList;
         return this;
     }
     withBlackPoints(blackPoints) {
@@ -41,6 +41,6 @@ export class LevelBuilder {
         return this;
     }
     build() {
-        return new Level(this.lives, this.enemySpawnTimes, this.boardHeight, this.boardWidth, this.wayPoints, this.canvas, this.tetradFactory, this.blackPoints, this.enemySpawnPoint);
+        return new Level(this.lives, this.enemySpawnTimes, this.boardHeight, this.boardWidth, this.wayPoints, this.canvas, this.tetradList, this.blackPoints, this.enemySpawnPoint);
     }
 }
