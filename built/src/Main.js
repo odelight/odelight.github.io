@@ -9,7 +9,6 @@ var levelLoaders = [];
 var currentLevelIndex;
 var controller;
 var lossAlerted = false;
-var waitingForClickToContinue = false;
 var currentLevel;
 start();
 function start() {
@@ -44,20 +43,13 @@ function getStartLevel() {
     return startLevel;
 }
 function loadLevel(levelIndex) {
-    AudioService.playMusicForLevel(levelIndex);
     currentLevel = levelLoaders[levelIndex]();
     currentLevelIndex = levelIndex;
     controller.setLevel(currentLevel);
 }
 function updateLevel() {
-    if (waitingForClickToContinue) {
-        if (!controller.isWaitingForClick()) {
-            waitingForClickToContinue = false;
-            loadLevel(currentLevelIndex);
-        }
-        else {
-            return;
-        }
+    if (controller.isWaitingForClick()) {
+        return;
     }
     currentLevel.update();
     if (currentLevel.isOver) {
@@ -88,7 +80,8 @@ function makeLevelUserDisplayable(levelIndex) {
 function setIntermediateScreen(text, view) {
     view.intermediateScreen(text);
     controller.setWaitForClick();
-    waitingForClickToContinue = true;
+    controller.registerWaitingForClickListener(() => loadLevel(currentLevelIndex));
+    controller.registerWaitingForClickListener(() => AudioService.playMusicForLevel(currentLevelIndex));
 }
 function isLastLevel(level) {
     return level >= levelLoaders.length - 1;

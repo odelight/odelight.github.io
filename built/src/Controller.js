@@ -2,6 +2,7 @@ import { Util } from "./Util.js";
 import { AudioService } from "./AudioService.js";
 export class Controller {
     constructor(document) {
+        this.waitingForClickListeners = [];
         var canvas = Util.checkType(document.getElementById("gameCanvas"), HTMLCanvasElement);
         canvas.addEventListener('mousemove', Controller.staticOnMouseMove);
         canvas.addEventListener('click', Controller.staticOnMouseClick);
@@ -18,6 +19,13 @@ export class Controller {
         soundOffRadio.onclick = (() => AudioService.setSoundEffectsOn(false));
         musicOnRadio.onclick = (() => AudioService.setMusicOn(true));
         musicOffRadio.onclick = (() => AudioService.setMusicOn(false));
+        var radios = [soundOnRadio, soundOffRadio, musicOnRadio, musicOffRadio];
+        for (var radio of radios) {
+            if (radio.checked) {
+                if (radio.onclick != null)
+                    radio.onclick(new MouseEvent("null"));
+            }
+        }
     }
     static turnSoundOn(a, b) {
         return null;
@@ -44,7 +52,7 @@ export class Controller {
     }
     onMouseClick(event) {
         if (this.waitingForClick) {
-            this.waitingForClick = false;
+            this.stopWaitingForClick();
             return;
         }
         this.level.clearAndDrawStatic();
@@ -59,11 +67,20 @@ export class Controller {
             event.preventDefault();
         }
     }
+    registerWaitingForClickListener(listener) {
+        this.waitingForClickListeners.push(listener);
+    }
     setWaitForClick() {
         this.waitingForClick = true;
     }
     isWaitingForClick() {
         return this.waitingForClick;
+    }
+    stopWaitingForClick() {
+        for (var listener of this.waitingForClickListeners) {
+            listener();
+        }
+        this.waitingForClick = false;
     }
 }
 Controller.SPACE_BAR_CODE = 32;

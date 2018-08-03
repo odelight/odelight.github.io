@@ -1,4 +1,4 @@
-import { black } from "./Color.js";
+import { black, grey } from "./Color.js";
 import { ViewImageFileManager } from "./ViewImageFileManager.js";
 import { AttackView } from "./AttackView.js";
 import { PixelPoint } from "./PixelPoint.js";
@@ -18,6 +18,7 @@ export class View {
     clear() {
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         this.drawDisplayRegionDivider();
+        this.drawGrid();
     }
     drawDisplayRegionDivider() {
         this.ctx.strokeStyle = black.colorString;
@@ -27,6 +28,22 @@ export class View {
         this.ctx.lineTo(this.boardWidth * this.tileWidth + 0.5, this.canvasHeight);
         this.ctx.stroke();
         this.ctx.closePath();
+    }
+    drawGrid() {
+        this.ctx.strokeStyle = grey.colorString;
+        this.ctx.lineWidth = 1;
+        for (var i = 1; i < this.boardWidth; i++) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(i * this.tileWidth, 0);
+            this.ctx.lineTo(i * this.tileWidth, this.boardHeight * this.tileHeight);
+            this.ctx.stroke();
+        }
+        for (var i = 1; i < this.boardHeight; i++) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, i * this.tileHeight);
+            this.ctx.lineTo(this.boardWidth * this.tileWidth, i * this.tileHeight);
+            this.ctx.stroke();
+        }
     }
     drawUpcomingTetrads(comingTetrads) {
         for (var i = 0; i < comingTetrads.length; i++) {
@@ -142,6 +159,10 @@ export class View {
     drawLives(numLives, fontSize, xPos, yPos) {
         this.ctx.font = fontSize + "px Arial";
         this.ctx.fillText("lives: " + numLives, xPos, yPos);
+    }
+    drawTetradsToPlace(numTetrads, fontSize, xPos, yPos) {
+        this.ctx.font = fontSize + "px Arial";
+        this.ctx.fillText("(... And " + numTetrads + " more)", xPos, yPos);
     }
     intermediateScreen(displayString) {
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);

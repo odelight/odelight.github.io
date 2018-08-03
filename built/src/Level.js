@@ -137,9 +137,13 @@ export class Level {
         if (this.ghostTetrad != null) {
             this.view.drawTetrad(this.ghostTetrad.type, this.ghostTetrad.position.x, this.ghostTetrad.position.y, true, this.tetradPlacementLegal);
         }
-        var timerXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 4);
         var livesXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 2);
         this.view.drawLives(this.lives, 20, livesXCenter, this.displayRegionWidth / 4);
+        var moreTetradsX = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 8);
+        var moreTetradsY = this.boardHeight * this.tileHeight - this.displayRegionWidth / 4;
+        if (this.placeableTetradList.length > 0) {
+            this.view.drawTetradsToPlace(this.placeableTetradList.length, 20, moreTetradsX, moreTetradsY);
+        }
         this.view.drawUpcomingTetrads(this.comingTetrads);
         this.view.drawBlockedSpaces(this.blackPoints);
         this.view.drawPath(this.fullPath, this.wayPoints);
@@ -247,7 +251,7 @@ export class Level {
             this.tetradDoAttack(tetrad);
         }
     }
-    tetradDoAttack(tetrad, predicate = (enemy) => true) {
+    tetradDoAttack(tetrad, predicate = null) {
         var multiTarget = tetrad.type.attackType.multiTarget;
         var result = false;
         if (this.time % tetrad.type.attackType.attackDelay == 0) {
@@ -255,7 +259,7 @@ export class Level {
                 var enemy = this.enemyList[j];
                 var enemyTilePosition = enemy.pathing.pixelPosition.asTilePoint(this.tileWidth, this.tileHeight);
                 if (Pathing.straightDistance(tetrad.position, enemyTilePosition) < tetrad.type.attackType.range) {
-                    if (predicate(enemy)) {
+                    if (predicate == null || predicate(enemy)) {
                         this.doAttack(tetrad, enemy);
                         if (!multiTarget) {
                             return true;
@@ -265,6 +269,9 @@ export class Level {
                         }
                     }
                 }
+            }
+            if (predicate != null) {
+                return this.tetradDoAttack(tetrad);
             }
         }
         return result;

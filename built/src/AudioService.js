@@ -36,6 +36,7 @@ export class AudioService {
             return;
         }
         this.stopMusic();
+        this.victorySound.muted = false;
         this.victorySound.play();
     }
     static playDefeatSound() {
@@ -43,6 +44,7 @@ export class AudioService {
             return;
         }
         this.stopMusic();
+        this.defeatSound.muted = false;
         this.defeatSound.play();
     }
     static playMusicForLevel(levelIndex) {
@@ -67,13 +69,15 @@ export class AudioService {
         for (var i = 0; i < this.audio.length; i++) {
             this.audio[i].pause();
         }
+        this.defeatSound.muted = true;
+        this.victorySound.muted = true;
         this.audioPlaying = false;
     }
     static playMusic() {
-        var audio = this.audio[this.currentTrack];
-        if (!AudioService.musicOn) {
+        if (!AudioService.musicOn || this.currentTrack < 0) {
             return;
         }
+        var audio = this.audio[this.currentTrack];
         audio.loop = true;
         var playPromise = audio.play();
         if (playPromise !== undefined) {
@@ -94,4 +98,4 @@ AudioService.buildTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetra
 AudioService.EliteTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/45552d4c/resources/Elite_Tetrad.mp3');
 AudioService.ErrorSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/f537c382/resources/Error.mp3');
 AudioService.audioPlaying = false;
-AudioService.currentTrack = 0;
+AudioService.currentTrack = -1;
