@@ -1,11 +1,16 @@
 import { Util } from "./Util.js";
 import { AudioService } from "./AudioService.js";
+import { TouchRecord } from "./TouchRecord.js";
 export class Controller {
     constructor(document) {
         this.waitingForClickListeners = [];
+        this.oldTouchRecord = null;
+        this.isTouchScreen = false;
         var canvas = Util.checkType(document.getElementById("gameCanvas"), HTMLCanvasElement);
         canvas.addEventListener('mousemove', Controller.staticOnMouseMove);
         canvas.addEventListener('click', Controller.staticOnMouseClick);
+        canvas.addEventListener('touchstart', Controller.staticOnScreenTouch);
+        canvas.addEventListener('touchmove', Controller.staticOnTouchMove);
         document.addEventListener('keydown', Controller.staticOnKeyPress);
         this.registerHtmlFormElements(document);
         Controller.instance = this;
@@ -39,31 +44,82 @@ export class Controller {
     static staticOnMouseClick(event) {
         Controller.instance.onMouseClick(event);
     }
+    static staticOnScreenTouch(event) {
+        Controller.instance.onScreenTouch(event);
+    }
+    static staticOnTouchMove(event) {
+        Controller.instance.onTouchMove(event);
+    }
     static staticOnKeyPress(event) {
         Controller.instance.onKeyPress(event);
     }
     onMouseMove(event) {
-        if (this.waitingForClick) {
+        if (this.waitingForClick || this.isTouchScreen) {
             return;
         }
-        this.rawMouseX = event.clientX;
-        this.rawMouseY = event.clientY;
-        this.level.updateGhostTetrad(this.rawMouseX, this.rawMouseY);
+        this.updateGhostPosition(event.clientX, event.clientY);
     }
-    onMouseClick(event) {
+    updateGhostPosition(x, y) {
+        this.ghostX = x;
+        this.ghostY = y;
+        this.level.updateGhostTetrad(this.ghostX, this.ghostY);
+    }
+    onScreenTouch(event) {
+        this.isTouchScreen = true;
+        event.stopPropagation();
         if (this.waitingForClick) {
             this.stopWaitingForClick();
             return;
         }
+        if (event.touches.length >= 3) {
+            this.level.tryRotateTetrad(this.ghostX, this.ghostY);
+            return;
+        }
+        if (event.changedTouches.length != 1) {
+            return;
+        }
+        var touch = event.changedTouches.item(0);
+        if (touch == null) {
+            return;
+        }
+        var touchRecord = new TouchRecord(touch.clientX, touch.clientY);
+        if (touchRecord.isInRangeOf(this.ghostX, this.ghostY)) {
+            this.placeTetrad(this.ghostX, this.ghostY);
+            this.oldTouchRecord = null;
+            return;
+        }
+        this.updateGhostPosition(touch.clientX, touch.clientY);
+    }
+    onTouchMove(event) {
+        if (event.changedTouches.length != 1) {
+            return;
+        }
+        var touch = event.changedTouches.item(0);
+        if (touch == null) {
+            return;
+        }
+        this.updateGhostPosition(touch.clientX, touch.clientY);
+    }
+    onMouseClick(event) {
+        if (this.isTouchScreen) {
+            return;
+        }
+        if (this.waitingForClick) {
+            this.stopWaitingForClick();
+            return;
+        }
+        this.placeTetrad(event.clientX, event.clientY);
+    }
+    placeTetrad(x, y) {
         this.level.clearAndDrawStatic();
-        this.level.tryPlaceTetrad(event.clientX, event.clientY);
+        this.level.tryPlaceTetrad(x, y);
     }
     onKeyPress(event) {
         if (this.waitingForClick) {
             return;
         }
         if (event.keyCode == Controller.SPACE_BAR_CODE) {
-            this.level.tryRotateTetrad(this.rawMouseX, this.rawMouseY);
+            this.level.tryRotateTetrad(this.ghostX, this.ghostY);
             event.preventDefault();
         }
     }

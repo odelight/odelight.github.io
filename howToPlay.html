@@ -19,7 +19,8 @@
 <h2>Basics</h2>
 <img src="/resources/webpageGraphics/level1_annotated.png" alt="Annotated view of game"><br>
 Controls:<br>
--Left click to place tetrads - press spacebar to rotate the orientation of the upcoming tetrad.<br>
+-Desktop: Left click to place tetrads - press spacebar to rotate the orientation of the upcoming tetrad.<br>
+-Mobile: touch once or touch and drag to preview tetrad position; touch ghost tetrad again to confirm placement. Triple finger touch the screen to rotate tetrad.<br>
 -Enemies begin spawning once you have placed all of the tetrads that you have available for the level. <br>
 -The goal of the game is to prevent the enemies from getting to the last waypoint. You win the game once all enemies have spawned and disappeared off the map (either killed or reaching the last waypoint) and you still have lives remaining.<br>
 -The enemies spawn right next to the waypoint labelled "1", and move sequentially between waypoints. You can place tetrads on the map which will both lengthen the path enemies have to take between waypoints, and attack enemies. You are not allowed to place tetrads that will block the enemies path between waypoints.<br>
@@ -31,60 +32,66 @@ Controls:<br>
 
 If you place four tetrads in a configuration that creates the shape of a larger tetrad, you will create a superior "mega tetrad". You must use exactly four smaller tetrads to create the mega tetrad, but other than that, anything's game! Mega tetrads are more powerful versions of their small counterparts. See Tetrad Types section for details.
 <h2>Tetrad Types</h2><br>
-There are seven tetrad types:<br><br>
+There are seven tetrad types:<br>
+(Ranges are specified in tiles - the map is 40x40)
+<br><br>
 
 <h3>O</h3>
 Damage:200<br>
-Attack Cooldown: 200<br>
+Attack Speed: 0.5 / second<br>
 Range: 50<br>
-Special: Slows enemies<br><br>
+Special: Halves speed of enemies. Effect lasts for 5 seconds<br><br>
 <img src="/resources/webpageGraphics/tetradO.png"><br>
 
 <h3>I</h3>
 Damage:200<br>
-Attack Cooldown: 100<br>
+Attack Speed: 1 / second<br>
 Range: 40<br>
 Special: N/A<br><br>
 <img src="/resources/webpageGraphics/tetradI.png"><br>
 
 <h3>S</h3>
 Damage:100<br>
-Attack Cooldown: 50<br>
+Attack Speed: 2 / second<br>
 Range: 20<br>
 Special: N/A<br><br>
 <img src="/resources/webpageGraphics/tetradS.png"><br>
 
 <h3>Z</h3>
 Damage:100<br>
-Attack Cooldown: 50<br>
+Attack Speed: 2 / second<br>
 Range: 20<br>
 Special: N/A<br><br>
 <img src="/resources/webpageGraphics/tetradZ.png"><br>
 
 <h3>L</h3>
 Damage:40<br>
-Attack Cooldown: 100<br>
+Attack Speed: 1 / second<br>
 Range: 10<br>
 Special: Attacks all enemies in range at once<br><br>
 <img src="/resources/webpageGraphics/tetradL.png"><br>
 
 <h3>J</h3>
 Damage:40<br>
-Attack Cooldown: 100<br>
+Attack Speed: 1 / second<br>
 Range: 10<br>
 Special: Attacks all enemies in range at once<br><br>
 <img src="/resources/webpageGraphics/tetradJ.png"><br>
 
 <h3>T</h3>
 Damage:45<br>
-Attack Cooldown: 20<br>
+Attack Speed: 5 / second<br>
 Range: 10<br>
 Special: N/A<br><br>
 <img src="/resources/webpageGraphics/tetradT.png"><br>
 
 Mega tetrads have similar attributes to their smaller versions but with:<br><br>
 -Triple the damage<br>
--One third the attack cooldown(rounded up)<br>
+-Three times the attack speed(disclaimer: time between attacks rounded to the nearest hundredth of a second)<br>
 -Triple the range<br>
 -Slowing effect lasts twice as long(for O tetrads)<br>
+<br>
+<br>
+Towers will attack the enemy that spawned first and is also in range. If the tower has a slowing effect, it will try to avoid attacking an enemy that is already slowed.<br>
+Disclaimer: All times are approximate; times are internally consistent but not necessarily consistent with an actual clock.<br>
 </body>
