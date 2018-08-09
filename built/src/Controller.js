@@ -31,6 +31,10 @@ export class Controller {
                     radio.onclick(new MouseEvent("null"));
             }
         }
+        var rotateButton = Util.checkType(document.getElementById('rotate-button'), HTMLButtonElement);
+        var undoButton = Util.checkType(document.getElementById('undo-button'), HTMLButtonElement);
+        rotateButton.onclick = (() => this.level.tryRotateTetrad(this.ghostX, this.ghostY));
+        undoButton.onclick = (() => this.level.undo());
     }
     static turnSoundOn(a, b) {
         return null;
@@ -122,6 +126,10 @@ export class Controller {
             this.level.tryRotateTetrad(this.ghostX, this.ghostY);
             event.preventDefault();
         }
+        if (event.keyCode == Controller.Z_CODE) {
+            this.level.undo();
+            event.preventDefault();
+        }
     }
     registerWaitingForClickListener(listener) {
         this.waitingForClickListeners.push(listener);
@@ -139,4 +147,5 @@ export class Controller {
         this.waitingForClick = false;
     }
 }
+Controller.Z_CODE = 90;
 Controller.SPACE_BAR_CODE = 32;

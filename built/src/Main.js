@@ -27,6 +27,7 @@ function start() {
     loadLevel(startLevel);
     setIntermediateScreen("Press anywhere to start the game", currentLevel.view);
     populateLevelSelector(document, levelLoaders);
+    setupRestartLevelButton(document);
     var updateVar = setInterval(updateLevel, 10);
 }
 function getStartLevel() {
@@ -98,6 +99,10 @@ function populateLevelSelector(document, levelLoaders) {
         loadLevel(parseInt(levelSelector.options[levelSelector.selectedIndex].value));
         setIntermediateScreen("Press anywhere to start the level", currentLevel.view);
     };
+}
+function setupRestartLevelButton(document) {
+    var restartButton = Util.checkType(document.getElementById('restart-button'), HTMLButtonElement);
+    restartButton.onclick = (() => loadLevel(currentLevelIndex));
 }
 function getBasicRandomLevel() {
     var spawnTimes = [];

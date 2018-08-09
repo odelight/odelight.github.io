@@ -11,14 +11,17 @@ import { Combo } from "./Combo.js";
 import { PathingObject } from "./PathingObject.js";
 import { EnemyTypes } from "./EnemyType.js";
 import { AudioService } from "./AudioService.js";
+import { TetradPlacement } from "./TetradPlacement.js";
 export class Level {
     constructor(lives, enemySpawnTimes, boardHeight, boardWidth, wayPoints, canvas, placeableTetradList, blackPoints, enemySpawnPoint) {
+        this.MAX_DISPLAYABLE_COMING_TETRADS = 12;
+        this.placementsList = [];
         this.enemiesRunning = false;
         this.tetradPlacementLegal = true;
         this.isOver = false;
         this.wonGame = false;
         this.tetradList = [];
-        this.comingTetrads = [];
+        this.visibleComingTetrads = [];
         this.ghostTetrad = null;
         this.enemyList = [];
         this.attackList = [];
@@ -48,23 +51,22 @@ export class Level {
         for (var i = 0; i < wayPoints.length; i++) {
             this.pathers[i] = new Pathing();
         }
-        this.updatePatherMapGrid();
         this.enemySpawnPoint = enemySpawnPoint;
-        this.fullPath = Pathing.fullPath(this.pathers, this.enemySpawnPoint);
-        this.placeableTetradList = placeableTetradList;
+        this.updatePathing();
+        this.nonVisibleComingTetrads = placeableTetradList;
         var firstTetrad = this.getNextTetrad();
         if (firstTetrad != null) {
             this.nextTetrad = firstTetrad;
         }
-        for (var i = 0; i < 12; i++) {
+        for (var i = 0; i < this.MAX_DISPLAYABLE_COMING_TETRADS; i++) {
             var nextTetrad = this.getNextTetrad();
             if (nextTetrad != null) {
-                this.comingTetrads.push(nextTetrad);
+                this.visibleComingTetrads.push(nextTetrad);
             }
         }
     }
     advanceComingTetrads() {
-        var comingTetrad = this.comingTetrads.shift();
+        var comingTetrad = this.visibleComingTetrads.shift();
         if (comingTetrad == null) {
             this.nextTetrad = null;
             return false;
@@ -72,18 +74,32 @@ export class Level {
         this.nextTetrad = comingTetrad;
         var nextTetrad = this.getNextTetrad();
         if (nextTetrad != null) {
-            this.comingTetrads.push(nextTetrad);
+            this.visibleComingTetrads.push(nextTetrad);
         }
         return true;
     }
     getNextTetrad() {
-        var result = this.placeableTetradList.shift();
+        var result = this.nonVisibleComingTetrads.shift();
         if (result !== undefined) {
             return result;
         }
         else {
             return null;
         }
+    }
+    unAdvanceComingTetrads(tetrad) {
+        if (this.nextTetrad == null) {
+            throw "unexpectedly null next tetrad";
+        }
+        if (this.visibleComingTetrads.length == this.MAX_DISPLAYABLE_COMING_TETRADS) {
+            var lastComingTetrad = this.visibleComingTetrads.pop();
+            if (lastComingTetrad == null) {
+                throw "Unexpectedly null lastcomingtetrad";
+            }
+            this.nonVisibleComingTetrads.unshift(lastComingTetrad);
+        }
+        this.visibleComingTetrads.unshift(this.nextTetrad);
+        this.nextTetrad = tetrad;
     }
     updateGhostTetrad(rawMouseX, rawMouseY) {
         if (this.nextTetrad == null) {
@@ -125,6 +141,31 @@ export class Level {
         var drawY = Math.floor((mouseY / this.tileHeight) - tetrad.centerY - 0.2);
         return new TilePoint(drawX, drawY);
     }
+    undo() {
+        if (this.placementsList.length == 0 || this.nextTetrad == null) {
+            return;
+        }
+        var lastPlacement = this.placementsList.pop();
+        if (lastPlacement == null) {
+            throw "undo() failed, lastPlaced null";
+        }
+        lastPlacement.undo(this);
+        this.unAdvanceComingTetrads(lastPlacement.placement.type);
+        this.clearAndDrawStatic();
+    }
+    removeTetrad(t) {
+        for (var i = 0; i < this.tetradList.length; i++) {
+            if (t == this.tetradList[i]) {
+                this.tetradList.splice(i, 1);
+            }
+        }
+        for (var i = 0; i < t.type.blockedList.length; i++) {
+            var blockOffset = t.type.blockedList[i];
+            var position = blockOffset.offset(t.position);
+            this.mapGrid.setBlocked(position, false);
+        }
+        this.updatePathing();
+    }
     clearAndDrawStatic() {
         //clear canvas;
         this.view.clear();
@@ -141,10 +182,10 @@ export class Level {
         this.view.drawLives(this.lives, 20, livesXCenter, this.displayRegionWidth / 4);
         var moreTetradsX = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 8);
         var moreTetradsY = this.boardHeight * this.tileHeight - this.displayRegionWidth / 4;
-        if (this.placeableTetradList.length > 0) {
-            this.view.drawTetradsToPlace(this.placeableTetradList.length, 20, moreTetradsX, moreTetradsY);
+        if (this.nonVisibleComingTetrads.length > 0) {
+            this.view.drawNonVisibleComingTetradCount(this.nonVisibleComingTetrads.length, 20, moreTetradsX, moreTetradsY);
         }
-        this.view.drawUpcomingTetrads(this.comingTetrads);
+        this.view.drawUpcomingTetrads(this.visibleComingTetrads);
         this.view.drawBlockedSpaces(this.blackPoints);
         this.view.drawPath(this.fullPath, this.wayPoints);
     }
@@ -182,18 +223,18 @@ export class Level {
         }
         return true;
     }
-    pushTetrad(T) {
-        var toPush = Combo.detectCombos(T, this.tetradList);
-        if (toPush != null) {
+    pushTetrad(T, isReinstatement = false) {
+        var combo = Combo.detectCombos(T, this.tetradList);
+        if (combo != null) {
             AudioService.playEliteTetradSound();
         }
         else {
             AudioService.playBuildTetradSound();
         }
         this.tetradList.push(T);
-        if (toPush != null) {
-            var bigTetrad = toPush.bigTetrad;
-            var components = toPush.components;
+        if (combo != null) {
+            var bigTetrad = combo.bigTetrad;
+            var components = combo.components;
             for (var i = 0; i < components.length; i++) {
                 this.tetradList.splice(this.tetradList.indexOf(components[i]), 1);
             }
@@ -202,16 +243,27 @@ export class Level {
         for (var i = 0; i < T.type.blockedList.length; i++) {
             this.mapGrid.setBlocked(T.type.blockedList[i].offset(T.position));
         }
-        this.updatePatherMapGrid();
+        this.updatePathing();
+        if (!isReinstatement) {
+            if (combo == null) {
+                this.placementsList.push(new TetradPlacement(T));
+            }
+            else {
+                var components = combo.components;
+                var indexOfRemoved = components.indexOf(T);
+                components.splice(indexOfRemoved, 1);
+                this.placementsList.push(new TetradPlacement(T, components, combo.bigTetrad));
+            }
+        }
+    }
+    updatePathing() {
+        for (var i = 0; i < this.wayPoints.length; i++) {
+            this.pathers[i].resetMap(this.mapGrid, this.wayPoints[i], null);
+        }
         for (var i = 0; i < this.enemyList.length; i++) {
             this.enemyList[i].pathing.setPathers(this.pathers);
         }
         this.fullPath = Pathing.fullPath(this.pathers, this.enemySpawnPoint);
-    }
-    updatePatherMapGrid() {
-        for (var i = 0; i < this.wayPoints.length; i++) {
-            this.pathers[i].resetMap(this.mapGrid, this.wayPoints[i], null);
-        }
     }
     update() {
         if (this.enemiesRunning) {

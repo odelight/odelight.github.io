@@ -17,8 +17,8 @@ export class MapGrid {
     isBlocked(point) {
         return this.internalGrid[point.x][point.y] == MapGrid.BLOCK_SPACE;
     }
-    setBlocked(point) {
-        this.internalGrid[point.x][point.y] = MapGrid.BLOCK_SPACE;
+    setBlocked(point, isBlocked = true) {
+        this.internalGrid[point.x][point.y] = isBlocked ? MapGrid.BLOCK_SPACE : MapGrid.BLANK_SPACE;
     }
 }
 MapGrid.BLOCK_SPACE = 0;

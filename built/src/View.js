@@ -160,7 +160,7 @@ export class View {
         this.ctx.font = fontSize + "px Arial";
         this.ctx.fillText("lives: " + numLives, xPos, yPos);
     }
-    drawTetradsToPlace(numTetrads, fontSize, xPos, yPos) {
+    drawNonVisibleComingTetradCount(numTetrads, fontSize, xPos, yPos) {
         this.ctx.font = fontSize + "px Arial";
         this.ctx.fillText("(... And " + numTetrads + " more)", xPos, yPos);
     }
