@@ -12,10 +12,10 @@ export class ViewImageFileManager {
         this.waypointImages = [];
         this.IMAGE_DIMENSION = '20';
         this.BIG_IMAGE_DIMENSION = '40';
-        this.createEnemies();
         this.createTetradTiles();
-        this.createAttackImages();
         this.createWaypointImages();
+        this.createEnemies();
+        this.createAttackImages();
     }
     createEnemies() {
         for (var enemyTypeIndex = 0; enemyTypeIndex < this.enemyTypes; enemyTypeIndex++) {

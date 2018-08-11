@@ -22,6 +22,12 @@ function start() {
     levelLoaders[i++] = getCenterSquareLevel;
     levelLoaders[i++] = getPepperedLevel;
     levelLoaders[i++] = getFigureEightLevel;
+    levelLoaders[i++] = getNineSquareLevel;
+    levelLoaders[i++] = getThreebarLevel2;
+    levelLoaders[i++] = getCurlELevel2;
+    levelLoaders[i++] = getCupLevel2;
+    levelLoaders[i++] = getCenterSquareLevel2;
+    levelLoaders[i++] = getNineSquareLevel2;
     controller = new Controller(document);
     var startLevel = getStartLevel();
     loadLevel(startLevel);
@@ -284,6 +290,174 @@ function getFigureEightLevel() {
         .withTetradList(repeatList([tetradT], 40))
         .withBlackPoints([])
         .withEnemySpawnPoint(new TilePoint(20, 1))
+        .build();
+    return level;
+}
+function getNineSquareLevel() {
+    var blackPoints = [];
+    for (var outerI = 0; outerI < 3; outerI++) {
+        for (var outerJ = 0; outerJ < 3; outerJ++) {
+            var xTopLeft = 3 + 12 * outerI;
+            var yTopLeft = 3 + 12 * outerJ;
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 10; j++) {
+                    if (Math.max(i, j) == 9 || Math.min(i, j) == 0) {
+                        blackPoints.push(new TilePoint(xTopLeft + i, yTopLeft + j));
+                    }
+                }
+            }
+        }
+    }
+    var spawnTimes = [];
+    for (var i = 1; i <= 45; i++) {
+        spawnTimes.push(200 + i * 35);
+    }
+    var level = new LevelBuilder()
+        .withLives(5)
+        .withEnemySpawnTimes([spawnTimes, [], []])
+        .withBoardWidth(40)
+        .withBoardHeight(40)
+        .withWayPoints([
+        new TilePoint(1, 1), new TilePoint(13, 1), new TilePoint(26, 1), new TilePoint(38, 1),
+        new TilePoint(38, 13), new TilePoint(26, 13), new TilePoint(13, 13), new TilePoint(1, 13),
+        new TilePoint(1, 26), new TilePoint(13, 26), new TilePoint(26, 26), new TilePoint(38, 26),
+        new TilePoint(38, 38), new TilePoint(26, 38), new TilePoint(13, 38), new TilePoint(1, 38)
+    ])
+        .withCanvas(canvas)
+        .withTetradList(repeatList([tetradO], 12))
+        .withBlackPoints(blackPoints)
+        .build();
+    return level;
+}
+function getNineSquareLevel2() {
+    var blackPoints = [];
+    for (var outerI = 0; outerI < 3; outerI++) {
+        for (var outerJ = 0; outerJ < 3; outerJ++) {
+            var xTopLeft = 2 + 13 * outerI;
+            var yTopLeft = 2 + 13 * outerJ;
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 10; j++) {
+                    if (Math.max(i, j) == 9 || Math.min(i, j) == 0) {
+                        blackPoints.push(new TilePoint(xTopLeft + i, yTopLeft + j));
+                    }
+                }
+            }
+        }
+    }
+    var spawnTimes = [];
+    for (var i = 1; i <= 9; i++) {
+        spawnTimes.push(200 + i * 35);
+    }
+    var level = new LevelBuilder()
+        .withLives(5)
+        .withEnemySpawnTimes([[], spawnTimes, []])
+        .withBoardWidth(40)
+        .withBoardHeight(40)
+        .withWayPoints([
+        new TilePoint(1, 1), new TilePoint(12, 1), new TilePoint(27, 1), new TilePoint(38, 1),
+        new TilePoint(38, 12), new TilePoint(27, 12), new TilePoint(12, 12), new TilePoint(1, 12),
+        new TilePoint(1, 27), new TilePoint(12, 27), new TilePoint(27, 27), new TilePoint(38, 27),
+        new TilePoint(38, 38), new TilePoint(27, 38), new TilePoint(12, 38), new TilePoint(1, 38)
+    ])
+        .withCanvas(canvas)
+        .withTetradList(repeatList([tetradS], 12))
+        .withBlackPoints(blackPoints)
+        .build();
+    return level;
+}
+function getThreebarLevel2() {
+    var bSpawnTimes = [];
+    var cSpawnTimes = [];
+    for (var i = 1; i <= 14; i++) {
+        bSpawnTimes.push(100 + i * 30);
+        if (i > 10) {
+            cSpawnTimes.push(235 + i * 30);
+        }
+    }
+    var blackPoints = [];
+    for (var i = 0; i <= 31; i++) {
+        blackPoints.push(new TilePoint(4 + i, 10));
+        blackPoints.push(new TilePoint(4 + i, 20));
+        blackPoints.push(new TilePoint(4 + i, 30));
+    }
+    var level = new LevelBuilder()
+        .withLives(5)
+        .withEnemySpawnTimes([[], bSpawnTimes, cSpawnTimes])
+        .withBoardWidth(40)
+        .withBoardHeight(40)
+        .withWayPoints([new TilePoint(20, 1), new TilePoint(20, 39)])
+        .withCanvas(canvas)
+        .withTetradList(repeatList([tetradI, tetradS, tetradI, tetradZ], 32))
+        .withBlackPoints(blackPoints)
+        .withEnemySpawnPoint(new TilePoint(20, 0))
+        .build();
+    return level;
+}
+function getCurlELevel2() {
+    var bSpawnTimes = [];
+    for (var i = 1; i <= 25; i++) {
+        bSpawnTimes.push(i * 50);
+    }
+    var cSpawnTimes = [];
+    for (var i = 1; i <= 15; i++) {
+        cSpawnTimes.push(1250 + i * 50);
+    }
+    var level = new LevelBuilder()
+        .withLives(2)
+        .withEnemySpawnTimes([[], bSpawnTimes, cSpawnTimes])
+        .withBoardWidth(40)
+        .withBoardHeight(40)
+        .withWayPoints([new TilePoint(1, 1), new TilePoint(1, 30), new TilePoint(30, 30), new TilePoint(30, 10), new TilePoint(10, 10), new TilePoint(10, 39), new TilePoint(39, 39)])
+        .withCanvas(canvas)
+        .withTetradList(repeatList([tetradL, tetradJ, tetradT], 40))
+        .withBlackPoints([])
+        .build();
+    return level;
+}
+function getCupLevel2() {
+    var spawnTimes = [];
+    for (var i = 1; i <= 12; i++) {
+        spawnTimes.push(100 + i * (50 - i));
+    }
+    var blackPoints = [];
+    for (var i = 0; i <= 20; i++) {
+        blackPoints.push(new TilePoint(10, 10 + i));
+        blackPoints.push(new TilePoint(10 + i, 30));
+        blackPoints.push(new TilePoint(30, 30 - i));
+    }
+    var level = new LevelBuilder()
+        .withLives(5)
+        .withEnemySpawnTimes([spawnTimes, [], []])
+        .withBoardWidth(40)
+        .withBoardHeight(40)
+        .withWayPoints([new TilePoint(1, 1), new TilePoint(39, 1)])
+        .withCanvas(canvas)
+        .withTetradList(repeatList([tetradS, tetradL, tetradI, tetradJ], 16))
+        .withBlackPoints(blackPoints)
+        .build();
+    return level;
+}
+function getCenterSquareLevel2() {
+    var spawnTimes = [];
+    for (var i = 1; i <= 20; i++) {
+        spawnTimes.push(100 + i * 30);
+    }
+    var blackPoints = [];
+    for (var i = 0; i <= 23; i++) {
+        blackPoints.push(new TilePoint(8 + i, 8));
+        blackPoints.push(new TilePoint(8 + i, 31));
+        blackPoints.push(new TilePoint(8, 8 + i));
+        blackPoints.push(new TilePoint(31, 8 + i));
+    }
+    var level = new LevelBuilder()
+        .withLives(5)
+        .withEnemySpawnTimes([[], spawnTimes, [50, 100]])
+        .withBoardWidth(40)
+        .withBoardHeight(40)
+        .withWayPoints([new TilePoint(1, 1), new TilePoint(1, 39), new TilePoint(39, 39), new TilePoint(39, 1), new TilePoint(2, 1)])
+        .withCanvas(canvas)
+        .withTetradList(repeatList([tetradT, tetradS, tetradT, tetradZ], 40))
+        .withBlackPoints(blackPoints)
         .build();
     return level;
 }
