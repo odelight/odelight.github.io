@@ -99,7 +99,7 @@ export class Level {
             this.nonVisibleComingTetrads.unshift(lastComingTetrad);
         }
         this.visibleComingTetrads.unshift(this.nextTetrad);
-        this.nextTetrad = tetrad;
+        this.nextTetrad = TetradType.unrotate(tetrad);
     }
     updateGhostTetrad(rawMouseX, rawMouseY) {
         if (this.nextTetrad == null) {
@@ -178,8 +178,9 @@ export class Level {
         if (this.ghostTetrad != null) {
             this.view.drawTetrad(this.ghostTetrad.type, this.ghostTetrad.position.x, this.ghostTetrad.position.y, true, this.tetradPlacementLegal);
         }
-        var livesXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 2);
-        this.view.drawLives(this.lives, 20, livesXCenter, this.displayRegionWidth / 4);
+        var livesXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 8);
+        this.view.drawLives(this.lives, 20, livesXCenter, 5 * this.displayRegionWidth / 16);
+        this.view.drawNumEnemies(this.getNumEnemiesToSpawn(), 20, livesXCenter, 3 * this.displayRegionWidth / 16);
         var moreTetradsX = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 8);
         var moreTetradsY = this.boardHeight * this.tileHeight - this.displayRegionWidth / 4;
         if (this.nonVisibleComingTetrads.length > 0) {
@@ -353,12 +354,23 @@ export class Level {
     getEnemy(enemyTypeIndex) {
         return new Enemy(EnemyTypes[enemyTypeIndex], new PathingObject(this.wayPoints.slice(0), this.enemySpawnPoint, this.pathers, this.tileWidth, this.tileHeight));
     }
+    getNumEnemiesToSpawn() {
+        var result = 0;
+        for (var i = 0; i < EnemyTypes.length; i++) {
+            result += this.enemySpawnTimes[i].length;
+        }
+        return result;
+    }
     lose() {
-        this.wonGame = false;
-        this.isOver = true;
+        if (!this.isOver) {
+            this.wonGame = false;
+            this.isOver = true;
+        }
     }
     win() {
-        this.wonGame = true;
-        this.isOver = true;
+        if (!this.isOver) {
+            this.wonGame = true;
+            this.isOver = true;
+        }
     }
 }

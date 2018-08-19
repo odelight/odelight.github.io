@@ -160,9 +160,13 @@ export class View {
         this.ctx.font = fontSize + "px Arial";
         this.ctx.fillText("lives: " + numLives, xPos, yPos);
     }
+    drawNumEnemies(numEnemies, fontSize, xPos, yPos) {
+        this.ctx.font = fontSize + "px Arial";
+        this.ctx.fillText("enemies: " + numEnemies, xPos, yPos);
+    }
     drawNonVisibleComingTetradCount(numTetrads, fontSize, xPos, yPos) {
         this.ctx.font = fontSize + "px Arial";
-        this.ctx.fillText("(... And " + numTetrads + " more)", xPos, yPos);
+        this.ctx.fillText("(... and " + numTetrads + " more)", xPos, yPos);
     }
     intermediateScreen(displayString) {
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);

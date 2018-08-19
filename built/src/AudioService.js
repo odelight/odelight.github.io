@@ -52,10 +52,10 @@ export class AudioService {
             return;
         }
         var newTrack;
-        if (levelIndex < 5) {
+        if (levelIndex < 6) {
             newTrack = 0;
         }
-        else if (levelIndex < 10) {
+        else if (levelIndex < 12) {
             newTrack = 1;
         }
         else {

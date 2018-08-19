@@ -3,6 +3,7 @@ import { TilePoint } from "./TilePoint.js";
 export class LevelBuilder {
     constructor() {
         this.enemySpawnPoint = new TilePoint(0, 0);
+        this.lives = 0;
     }
     withLives(lives) {
         this.lives = lives;
