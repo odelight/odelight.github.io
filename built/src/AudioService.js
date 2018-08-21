@@ -94,7 +94,7 @@ AudioService.audio = [new Audio('https://cdn.rawgit.com/odelight/tetradefense-de
     new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/dc5dd7b8/resources/Breeze.mp3')];
 AudioService.victorySound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/1c5d275a/resources/Victory.mp3');
 AudioService.defeatSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/45552d4c/resources/Defeat.mp3');
-AudioService.buildTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/45552d4c/resources/Build_Tetrad.mp3');
+AudioService.buildTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/d06fa291/resources/Build_Tetrad.mp3');
 AudioService.EliteTetradSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/45552d4c/resources/Elite_Tetrad.mp3');
 AudioService.ErrorSound = new Audio('https://cdn.rawgit.com/odelight/tetradefense-deploy/f537c382/resources/Error.mp3');
 AudioService.audioPlaying = false;
