@@ -54,6 +54,7 @@ function getStartLevel() {
 function loadLevel(levelIndex) {
     currentLevel = levelLoaders[levelIndex]();
     currentLevelIndex = levelIndex;
+    currentLevel.setLevelNumber(makeLevelUserDisplayable(levelIndex));
     controller.setLevel(currentLevel);
 }
 function updateLevel() {
@@ -426,8 +427,7 @@ function getQuadCupLevel() {
             var yTopLeft = 4 + 18 * outerJ;
             for (var i = 0; i < 14; i++) {
                 for (var j = 0; j < 14; j++) {
-                    if (((i == 0 && !(outerI == 0 && outerJ == 1)) || (i == 13 && !(outerI == 1 && outerJ == 0))) ||
-                        ((j == 0 && !(outerI == 0 && outerJ == 0)) || (j == 13 && !(outerI == 1 && outerJ == 1)))) {
+                    if (((j == 0 && outerJ == 0) || (j == 13 && outerJ == 1)) || i == 0 || i == 13) {
                         blackPoints.push(new TilePoint(xTopLeft + i, yTopLeft + j));
                     }
                 }

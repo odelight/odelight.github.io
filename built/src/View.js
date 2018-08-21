@@ -156,9 +156,9 @@ export class View {
         this.ctx.closePath();
         this.ctx.fill();
     }
-    drawLives(numLives, fontSize, xPos, yPos) {
+    drawLevel(level, fontSize, xPos, yPos) {
         this.ctx.font = fontSize + "px Arial";
-        this.ctx.fillText("lives: " + numLives, xPos, yPos);
+        this.ctx.fillText("level: " + level, xPos, yPos);
     }
     drawNumEnemies(numEnemies, fontSize, xPos, yPos) {
         this.ctx.font = fontSize + "px Arial";

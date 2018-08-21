@@ -65,6 +65,9 @@ export class Level {
             }
         }
     }
+    setLevelNumber(level) {
+        this.levelNumber = level;
+    }
     advanceComingTetrads() {
         var comingTetrad = this.visibleComingTetrads.shift();
         if (comingTetrad == null) {
@@ -98,7 +101,7 @@ export class Level {
             }
             this.nonVisibleComingTetrads.unshift(lastComingTetrad);
         }
-        this.visibleComingTetrads.unshift(this.nextTetrad);
+        this.visibleComingTetrads.unshift(TetradType.unrotate(this.nextTetrad));
         this.nextTetrad = TetradType.unrotate(tetrad);
     }
     updateGhostTetrad(rawMouseX, rawMouseY) {
@@ -179,8 +182,8 @@ export class Level {
             this.view.drawTetrad(this.ghostTetrad.type, this.ghostTetrad.position.x, this.ghostTetrad.position.y, true, this.tetradPlacementLegal);
         }
         var livesXCenter = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 8);
-        this.view.drawLives(this.lives, 20, livesXCenter, 5 * this.displayRegionWidth / 16);
-        this.view.drawNumEnemies(this.getNumEnemiesToSpawn(), 20, livesXCenter, 3 * this.displayRegionWidth / 16);
+        this.view.drawLevel(this.levelNumber, 20, livesXCenter, 3 * this.displayRegionWidth / 16);
+        this.view.drawNumEnemies(this.getNumEnemiesToSpawn(), 20, livesXCenter, 5 * this.displayRegionWidth / 16);
         var moreTetradsX = this.boardWidth * this.tileWidth + (this.displayRegionWidth / 8);
         var moreTetradsY = this.boardHeight * this.tileHeight - this.displayRegionWidth / 4;
         if (this.nonVisibleComingTetrads.length > 0) {
@@ -188,7 +191,9 @@ export class Level {
         }
         this.view.drawUpcomingTetrads(this.visibleComingTetrads);
         this.view.drawBlockedSpaces(this.blackPoints);
-        this.view.drawPath(this.fullPath, this.wayPoints);
+        let drawingWaypoints = this.wayPoints.slice(0);
+        drawingWaypoints.unshift(this.enemySpawnPoint);
+        this.view.drawPath(this.fullPath, drawingWaypoints);
     }
     cheapCanPlaceLegally(T, xPosition, yPosition) {
         for (var i = 0; i < T.offsetList.length; i++) {
@@ -359,6 +364,7 @@ export class Level {
         for (var i = 0; i < EnemyTypes.length; i++) {
             result += this.enemySpawnTimes[i].length;
         }
+        result += this.enemyList.length;
         return result;
     }
     lose() {

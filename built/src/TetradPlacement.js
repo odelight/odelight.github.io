@@ -12,7 +12,7 @@ export class TetradPlacement {
             }
             level.removeTetrad(this.megaTetrad);
             for (var tetrad of this.othersInCombo) {
-                level.pushTetrad(tetrad);
+                level.pushTetrad(tetrad, true);
             }
         }
         else {
