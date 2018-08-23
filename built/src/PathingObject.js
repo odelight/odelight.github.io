@@ -17,6 +17,22 @@ export class PathingObject {
     get pixelPosition() {
         return this._pixelPosition;
     }
+    //Compares to other PathingObject by distance to end.
+    compareToByDistance(other) {
+        if (other.targetWayPointIndex - this.targetWayPointIndex != 0) {
+            return other.targetWayPointIndex - this.wayPoints.length;
+        }
+        if (this.track.length - other.track.length != 0) {
+            return this.track.length - other.track.length;
+        }
+        return Pathing.straightDistance(this.pixelPosition, this.nextTrackPoint()) - Pathing.straightDistance(other.pixelPosition, other.nextTrackPoint());
+    }
+    nextTrackPoint() {
+        if (this.track.length > 0) {
+            return this.track[0].asPixelPoint(this.tileWidth, this.tileHeight);
+        }
+        return this.wayPoints[this.targetWayPointIndex].asPixelPoint(this.tileWidth, this.tileHeight);
+    }
     //Returns true if enemy reached the end, false otherwise.
     update(speed) {
         if (this.track.length == 0) {

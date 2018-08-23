@@ -291,6 +291,7 @@ export class Level {
             }
             enemy.updateEffectTimers();
         }
+        this.enemyList.sort((a, b) => a.pathing.compareToByDistance(b.pathing));
     }
     decrementLives() {
         this.lives = this.lives - 1;

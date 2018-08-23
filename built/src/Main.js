@@ -116,7 +116,7 @@ function setupRestartLevelButton(document) {
 function getBasicRandomLevel() {
     var spawnTimes = [];
     for (var i = 0; i <= 3; i++) {
-        spawnTimes.push(i * 300);
+        spawnTimes.push(i * 125);
     }
     var level = new LevelBuilder()
         .withEnemySpawnTimes([spawnTimes, [], []])
@@ -179,7 +179,7 @@ function getCurlELevel() {
 }
 function getCupLevel() {
     var spawnTimes = [];
-    for (var i = 1; i <= 6; i++) {
+    for (var i = 1; i <= 4; i++) {
         spawnTimes.push(i * (50 - i));
     }
     var blackPoints = [];
