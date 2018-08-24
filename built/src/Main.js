@@ -87,8 +87,13 @@ function handleLevelOver() {
 function makeLevelUserDisplayable(levelIndex) {
     return levelIndex + 1;
 }
+var hintIndex;
 function setIntermediateScreen(text, view) {
-    view.intermediateScreen(text);
+    if (hintIndex === undefined) {
+        hintIndex = -1;
+    }
+    view.intermediateScreen(text, hintIndex % 3);
+    hintIndex++;
     controller.setWaitForClick();
     controller.registerWaitingForClickListener(() => loadLevel(currentLevelIndex));
     controller.registerWaitingForClickListener(() => AudioService.playMusicForLevel(currentLevelIndex));

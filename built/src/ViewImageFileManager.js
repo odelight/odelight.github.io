@@ -1,6 +1,7 @@
 export class ViewImageFileManager {
     constructor() {
         this.imagePath = "resources/graphics/";
+        this.hintPath = "resources/hintGraphics/";
         this.imageFileExtension = ".png";
         this.minHealth = 0;
         this.maxHealth = 128;
@@ -10,8 +11,10 @@ export class ViewImageFileManager {
         this.tetradImages = [];
         this.attackImages = [];
         this.waypointImages = [];
+        this.hintImages = [];
         this.IMAGE_DIMENSION = '20';
         this.BIG_IMAGE_DIMENSION = '40';
+        this.createHintImages();
         this.createTetradTiles();
         this.createWaypointImages();
         this.createEnemies();
@@ -59,6 +62,14 @@ export class ViewImageFileManager {
             this.waypointImages[i] = image;
         }
     }
+    createHintImages() {
+        for (var i = 0; i < 3; i++) {
+            var imageName = "hint" + i + this.imageFileExtension;
+            var image = document.createElement('img');
+            image.src = this.hintPath + imageName;
+            this.hintImages[i] = image;
+        }
+    }
     getTetradImage(type) {
         return this.tetradImages[type.isBig ? 1 : 0][this.getTypeIndex(type.name)];
     }
@@ -93,5 +104,8 @@ export class ViewImageFileManager {
     }
     getWaypointImage(index) {
         return this.waypointImages[index];
+    }
+    getHintImage(index) {
+        return this.hintImages[index];
     }
 }

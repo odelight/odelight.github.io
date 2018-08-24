@@ -168,8 +168,12 @@ export class View {
         this.ctx.font = fontSize + "px Arial";
         this.ctx.fillText("(... and " + numTetrads + " more)", xPos, yPos);
     }
-    intermediateScreen(displayString) {
+    intermediateScreen(displayString, hintImageIndex = -1) {
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+        if (hintImageIndex > -1) {
+            var image = this.imageFileManager.getHintImage(hintImageIndex);
+            this.ctx.drawImage(image, 0, this.canvasHeight / 2);
+        }
         this.ctx.font = 36 + "px Arial";
         this.ctx.fillText(displayString, 20, this.canvasHeight / 2);
     }
