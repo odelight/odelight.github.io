@@ -51,17 +51,8 @@ export class AudioService {
         if (!AudioService.musicOn) {
             return;
         }
-        var newTrack;
-        if (levelIndex < 6) {
-            newTrack = 0;
-        }
-        else if (levelIndex < 12) {
-            newTrack = 1;
-        }
-        else {
-            newTrack = 2;
-        }
-        this.currentTrack = newTrack;
+        this.currentTrack = Math.floor(levelIndex / 3) % 3;
+        ;
         this.stopMusic();
         this.playMusic();
     }
