@@ -19,13 +19,13 @@ function start() {
     levelLoaders[i++] = getCurlELevel;
     levelLoaders[i++] = getThreebarLevel;
     levelLoaders[i++] = getZLevel;
-    levelLoaders[i++] = getCircuitWithSTetrads;
     levelLoaders[i++] = getCenterSquareLevel;
     levelLoaders[i++] = getPepperedLevel;
     levelLoaders[i++] = getFigureEightLevel;
     levelLoaders[i++] = getNineSquareLevel;
     levelLoaders[i++] = getPowerButtonLevel2;
     levelLoaders[i++] = getFourSquareLevel;
+    levelLoaders[i++] = getCircuitWithSTetrads;
     levelLoaders[i++] = getQuadCupLevel;
     levelLoaders[i++] = getNineSquareLevel2;
     levelLoaders[i++] = getPowerButtonLevel;
@@ -77,6 +77,7 @@ function handleLevelOver() {
             setIntermediateScreen("You beat level " + makeLevelUserDisplayable(currentLevelIndex) + ". Click anywhere to load the next level", currentLevel.view);
             currentLevelIndex++;
             AudioService.playVictorySound();
+            updateLevelSelector(document, currentLevelIndex);
         }
     }
     else {
@@ -113,6 +114,10 @@ function populateLevelSelector(document, levelLoaders) {
         loadLevel(parseInt(levelSelector.options[levelSelector.selectedIndex].value));
         setIntermediateScreen("Press anywhere to start the level", currentLevel.view);
     };
+}
+function updateLevelSelector(document, level) {
+    var levelSelector = Util.checkType(document.getElementById('levels'), HTMLSelectElement);
+    levelSelector.selectedIndex = level;
 }
 function setupRestartLevelButton(document) {
     var restartButton = Util.checkType(document.getElementById('restart-button'), HTMLButtonElement);
