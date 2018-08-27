@@ -125,8 +125,8 @@ function setupRestartLevelButton(document) {
 }
 function getBasicRandomLevel() {
     var spawnTimes = [];
-    for (var i = 0; i <= 3; i++) {
-        spawnTimes.push(i * 125);
+    for (var i = 0; i <= 2; i++) {
+        spawnTimes.push(i * 300);
     }
     var level = new LevelBuilder()
         .withEnemySpawnTimes([spawnTimes, [], []])
