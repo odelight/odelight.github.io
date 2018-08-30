@@ -12,6 +12,13 @@ import { PathingObject } from "./PathingObject.js";
 import { EnemyTypes } from "./EnemyType.js";
 import { AudioService } from "./AudioService.js";
 import { TetradPlacement } from "./TetradPlacement.js";
+var GamePhase;
+(function (GamePhase) {
+    GamePhase["placingTetrads"] = "PLACING_TETRADS";
+    GamePhase["clickToStart"] = "CLICK_TO_START";
+    GamePhase["enemiesRunning"] = "ENEMIES_RUNNING";
+})(GamePhase || (GamePhase = {}));
+;
 export class Level {
     constructor(lives, enemySpawnTimes, boardHeight, boardWidth, wayPoints, canvas, placeableTetradList, blackPoints, enemySpawnPoint) {
         this.MAX_DISPLAYABLE_COMING_TETRADS = 12;
@@ -25,6 +32,9 @@ export class Level {
         this.ghostTetrad = null;
         this.enemyList = [];
         this.attackList = [];
+        this.difficultyHealthMultiplier = 1;
+        // 0 = placing tetrads, 1 = "click to start level", 2 = "enemies running";
+        this.gamePhase = GamePhase.placingTetrads;
         this.lives = lives;
         this.enemySpawnTimes = enemySpawnTimes;
         this.boardHeight = boardHeight;
@@ -91,9 +101,6 @@ export class Level {
         }
     }
     unAdvanceComingTetrads(tetrad) {
-        if (this.nextTetrad == null) {
-            throw "unexpectedly null next tetrad";
-        }
         if (this.visibleComingTetrads.length == this.MAX_DISPLAYABLE_COMING_TETRADS) {
             var lastComingTetrad = this.visibleComingTetrads.pop();
             if (lastComingTetrad == null) {
@@ -101,7 +108,9 @@ export class Level {
             }
             this.nonVisibleComingTetrads.unshift(lastComingTetrad);
         }
-        this.visibleComingTetrads.unshift(TetradType.unrotate(this.nextTetrad));
+        if (this.nextTetrad != null) {
+            this.visibleComingTetrads.unshift(TetradType.unrotate(this.nextTetrad));
+        }
         this.nextTetrad = TetradType.unrotate(tetrad);
     }
     updateGhostTetrad(rawMouseX, rawMouseY) {
@@ -118,6 +127,11 @@ export class Level {
         this.enemiesRunning = true;
     }
     tryPlaceTetrad(x, y) {
+        if (this.gamePhase == GamePhase.clickToStart) {
+            this.gamePhase = GamePhase.enemiesRunning;
+            this.startSpawningEnemies();
+            return;
+        }
         if (this.nextTetrad == null) {
             return;
         }
@@ -125,7 +139,7 @@ export class Level {
         if (this.nextTetrad != null && this.canPlaceLegally(this.nextTetrad, drawPos.x, drawPos.y)) {
             this.pushTetrad(new Tetrad(this.nextTetrad, drawPos.x, drawPos.y));
             if (!this.advanceComingTetrads()) {
-                this.startSpawningEnemies();
+                this.gamePhase = GamePhase.clickToStart;
             }
         }
         else {
@@ -145,15 +159,17 @@ export class Level {
         return new TilePoint(drawX, drawY);
     }
     undo() {
-        if (this.placementsList.length == 0 || this.nextTetrad == null) {
+        if (this.gamePhase == GamePhase.enemiesRunning) {
             return;
         }
         var lastPlacement = this.placementsList.pop();
         if (lastPlacement == null) {
-            throw "undo() failed, lastPlaced null";
+            //haven't placed any towers yet / no more actions to undo. Undo should just do nothing.
+            return;
         }
         lastPlacement.undo(this);
         this.unAdvanceComingTetrads(lastPlacement.placement.type);
+        this.gamePhase = GamePhase.placingTetrads;
         this.clearAndDrawStatic();
     }
     removeTetrad(t) {
@@ -194,6 +210,9 @@ export class Level {
         let drawingWaypoints = this.wayPoints.slice(0);
         drawingWaypoints.unshift(this.enemySpawnPoint);
         this.view.drawPath(this.fullPath, drawingWaypoints);
+        if (this.gamePhase == GamePhase.clickToStart) {
+            this.view.drawClickToStartText(80, (this.boardWidth * this.tileWidth / 2), this.boardHeight * this.tileHeight / 2);
+        }
     }
     cheapCanPlaceLegally(T, xPosition, yPosition) {
         for (var i = 0; i < T.offsetList.length; i++) {
@@ -358,7 +377,7 @@ export class Level {
         }
     }
     getEnemy(enemyTypeIndex) {
-        return new Enemy(EnemyTypes[enemyTypeIndex], new PathingObject(this.wayPoints.slice(0), this.enemySpawnPoint, this.pathers, this.tileWidth, this.tileHeight));
+        return new Enemy(EnemyTypes[enemyTypeIndex], new PathingObject(this.wayPoints.slice(0), this.enemySpawnPoint, this.pathers, this.tileWidth, this.tileHeight), this.difficultyHealthMultiplier);
     }
     getNumEnemiesToSpawn() {
         var result = 0;
@@ -379,5 +398,8 @@ export class Level {
             this.wonGame = true;
             this.isOver = true;
         }
+    }
+    setDifficulty(difficultyHealthMultiplier) {
+        this.difficultyHealthMultiplier = difficultyHealthMultiplier;
     }
 }

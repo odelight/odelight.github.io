@@ -168,6 +168,18 @@ export class View {
         this.ctx.font = fontSize + "px Arial";
         this.ctx.fillText("(... and " + numTetrads + " more)", xPos, yPos);
     }
+    drawClickToStartText(fontSize, xPos, yPos) {
+        this.ctx.save();
+        this.ctx.font = fontSize + "px Arial";
+        this.ctx.fillStyle = "#ff0000";
+        this.ctx.textAlign = "center";
+        this.ctx.strokeStyle = "#000000";
+        this.ctx.lineWidth = 2;
+        var text = "Click to start level";
+        this.ctx.fillText(text, xPos, yPos);
+        this.ctx.strokeText(text, xPos, yPos);
+        this.ctx.restore();
+    }
     intermediateScreen(displayString, hintImageIndex = -1) {
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         if (hintImageIndex > -1) {

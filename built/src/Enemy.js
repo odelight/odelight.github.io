@@ -1,9 +1,11 @@
+export var availableDifficulties = ['Easy', 'Medium', 'Hard'];
 export class Enemy {
-    constructor(type, pathingObject) {
+    constructor(type, pathingObject, difficultyHealthMultiplier = 1) {
+        var difficultyAdjustedMaxHealth = type.maxHealth * difficultyHealthMultiplier;
         this.type = type;
         this.pathing = pathingObject;
-        this.maxHp = type.maxHealth;
-        this.hp = type.maxHealth;
+        this.maxHp = difficultyAdjustedMaxHealth;
+        this.hp = difficultyAdjustedMaxHealth;
         this.currentSpeed = this.type.speed;
         this.slowingTimer = 0;
     }
